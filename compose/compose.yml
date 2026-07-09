@@ -1,0 +1,10 @@
+# Hermes Enterprise Stack (HES)
+# File: compose/compose.yml
+# Purpose: Orchestrate Phase 1 infrastructure modules with Docker Compose V2.
+
+name: ${HES_COMPOSE_PROJECT_NAME:-hes}
+
+include:
+  - path: ./network.yml
+  - path: ./security.yml
+  - path: ./traefik.yml

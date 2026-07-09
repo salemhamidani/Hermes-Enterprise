@@ -1,0 +1,3 @@
+# Hermes Enterprise Stack (HES)
+# File: ssl/.gitkeep
+# Purpose: Preserve the TLS state directory in Git.

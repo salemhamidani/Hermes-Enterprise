@@ -1,0 +1,71 @@
+# Hermes Enterprise Stack (HES)
+# File: compose/security.yml
+# Purpose: Provide a constrained Docker API boundary for infrastructure services.
+
+name: ${HES_COMPOSE_PROJECT_NAME:-hes}
+
+services:
+  docker-socket-proxy:
+    image: ${HES_SOCKET_PROXY_IMAGE:-tecnativa/docker-socket-proxy:0.3.0}
+    restart: ${HES_RESTART_POLICY:-unless-stopped}
+    read_only: true
+    init: true
+    pids_limit: 128
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /run
+    environment:
+      LOG_LEVEL: ${HES_SOCKET_PROXY_LOG_LEVEL:-info}
+      CONTAINERS: 1
+      EVENTS: 1
+      INFO: 1
+      NETWORKS: 1
+      SERVICES: 0
+      TASKS: 0
+      VERSION: 1
+      POST: 0
+      AUTH: 0
+      BUILD: 0
+      COMMIT: 0
+      CONFIGS: 0
+      DISTRIBUTION: 0
+      EXEC: 0
+      IMAGES: 0
+      NODES: 0
+      PLUGINS: 0
+      SECRETS: 0
+      SESSION: 0
+      SWARM: 0
+      SYSTEM: 0
+      VOLUMES: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - hes-internal
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:2375/version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    stop_grace_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "${HES_DOCKER_LOG_MAX_SIZE:-10m}"
+        max-file: "${HES_DOCKER_LOG_MAX_FILE:-5}"
+    labels:
+      com.hermes.stack: "${HES_PROJECT_NAME:-hermes-enterprise}"
+      com.hermes.environment: "${HES_ENVIRONMENT:-production}"
+      com.hermes.phase: "1"
+      org.opencontainers.image.title: "Hermes Enterprise Stack Docker Socket Proxy"
+      org.opencontainers.image.description: "Read-constrained Docker API proxy for infrastructure automation."
+
+networks:
+  hes-internal:
+    name: ${HES_INTERNAL_NETWORK:-hes-production-internal}
+    driver: bridge
+    internal: true

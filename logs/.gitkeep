@@ -1,0 +1,3 @@
+# Hermes Enterprise Stack (HES)
+# File: logs/.gitkeep
+# Purpose: Preserve the runtime logs directory in Git.

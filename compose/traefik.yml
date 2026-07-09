@@ -1,0 +1,84 @@
+# Hermes Enterprise Stack (HES)
+# File: compose/traefik.yml
+# Purpose: Define the Phase 1 Traefik ingress infrastructure.
+
+name: ${HES_COMPOSE_PROJECT_NAME:-hes}
+
+services:
+  traefik:
+    image: ${HES_TRAEFIK_IMAGE:-traefik:v3.3}
+    restart: ${HES_RESTART_POLICY:-unless-stopped}
+    read_only: true
+    init: true
+    pids_limit: 256
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    tmpfs:
+      - /tmp
+    command:
+      - --global.checknewversion=false
+      - --global.sendanonymoususage=false
+      - --ping=true
+      - --api.dashboard=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --providers.docker=true
+      - --providers.docker.endpoint=${HES_TRAEFIK_DOCKER_ENDPOINT:-tcp://docker-socket-proxy:2375}
+      - --providers.docker.exposedbydefault=false
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      - --certificatesresolvers.default.acme.email=${HES_ADMIN_EMAIL:-admin@example.com}
+      - --certificatesresolvers.default.acme.storage=${HES_TRAEFIK_ACME_STORAGE:-/letsencrypt/acme.json}
+      - --certificatesresolvers.default.acme.httpchallenge=true
+      - --certificatesresolvers.default.acme.httpchallenge.entrypoint=web
+      - --log.level=${HES_TRAEFIK_LOG_LEVEL:-INFO}
+      - --accesslog=${HES_TRAEFIK_ACCESS_LOG_ENABLED:-true}
+      - --accesslog.filepath=/var/log/traefik/access.log
+    ports:
+      - target: 80
+        published: ${HES_TRAEFIK_HTTP_PORT:-80}
+        protocol: tcp
+      - target: 443
+        published: ${HES_TRAEFIK_HTTPS_PORT:-443}
+        protocol: tcp
+    volumes:
+      - ${HES_CONFIG_DIR:-./config}/traefik/dynamic:/etc/traefik/dynamic:ro
+      - ${HES_SSL_DIR:-./ssl}/letsencrypt:/letsencrypt
+      - ${HES_LOG_DIR:-./logs}/traefik:/var/log/traefik
+    networks:
+      - hes-public
+      - hes-internal
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "${HES_DOCKER_LOG_MAX_SIZE:-10m}"
+        max-file: "${HES_DOCKER_LOG_MAX_FILE:-5}"
+    labels:
+      traefik.enable: "false"
+      com.hermes.stack: "${HES_PROJECT_NAME:-hermes-enterprise}"
+      com.hermes.environment: "${HES_ENVIRONMENT:-production}"
+      com.hermes.phase: "1"
+      org.opencontainers.image.title: "Hermes Enterprise Stack Traefik"
+      org.opencontainers.image.description: "Ingress reverse proxy for HES Phase 1 infrastructure."
+
+networks:
+  hes-public:
+    name: ${HES_PUBLIC_NETWORK:-hes-production-public}
+    driver: bridge
+  hes-internal:
+    name: ${HES_INTERNAL_NETWORK:-hes-production-internal}
+    driver: bridge
+    internal: true

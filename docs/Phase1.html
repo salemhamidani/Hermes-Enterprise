@@ -1,0 +1,872 @@
+<!--
+Hermes Enterprise Stack (HES)
+File: docs/Phase1.html
+Purpose: Interactive HTML documentation for Phase 1 infrastructure.
+-->
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HES Phase 1 Documentation</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #071018;
+      --bg-soft: #0d1a24;
+      --panel: rgba(16, 31, 43, .72);
+      --panel-strong: rgba(19, 39, 55, .9);
+      --line: rgba(148, 163, 184, .2);
+      --text: #eef6ff;
+      --muted: #9fb1c3;
+      --accent: #42d392;
+      --accent-2: #52a8ff;
+      --warn: #ffca6b;
+      --danger: #ff7b89;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .36);
+      --radius: 8px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    [data-theme="light"] {
+      color-scheme: light;
+      --bg: #eef5f8;
+      --bg-soft: #f7fbfd;
+      --panel: rgba(255, 255, 255, .74);
+      --panel-strong: rgba(255, 255, 255, .92);
+      --line: rgba(30, 41, 59, .15);
+      --text: #10202d;
+      --muted: #526172;
+      --accent: #008f62;
+      --accent-2: #006ecb;
+      --warn: #9a6400;
+      --danger: #b42336;
+      --shadow: 0 24px 80px rgba(15, 23, 42, .16);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--sans);
+      background:
+        radial-gradient(circle at 18% 12%, rgba(66, 211, 146, .16), transparent 30rem),
+        radial-gradient(circle at 88% 6%, rgba(82, 168, 255, .16), transparent 34rem),
+        linear-gradient(135deg, var(--bg), var(--bg-soft));
+      color: var(--text);
+      letter-spacing: 0;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    code, pre { font-family: var(--mono); }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 20px;
+      border-right: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(22px);
+      overflow-y: auto;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(66, 211, 146, .22), rgba(82, 168, 255, .18));
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-strong);
+      color: var(--text);
+      padding: 0 12px 0 36px;
+      outline: none;
+    }
+
+    .search-box span {
+      position: absolute;
+      left: 12px;
+      top: 11px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav a {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav a:hover,
+    .nav a.active {
+      color: var(--text);
+      background: var(--panel-strong);
+      border-color: var(--line);
+    }
+
+    .nav small {
+      color: var(--accent);
+      font-size: 11px;
+    }
+
+    .sidebar-footer {
+      margin-top: 18px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      background: rgba(0, 0, 0, .08);
+    }
+
+    .content {
+      min-width: 0;
+      padding: 24px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: -24px -24px 24px;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(7, 16, 24, .72);
+      backdrop-filter: blur(18px);
+    }
+
+    [data-theme="light"] .topbar { background: rgba(238, 245, 248, .72); }
+
+    .mobile-menu,
+    .theme-toggle,
+    .copy-btn {
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-strong);
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .mobile-menu {
+      display: none;
+      width: 40px;
+      font-size: 18px;
+    }
+
+    .theme-toggle {
+      padding: 0 12px;
+      color: var(--muted);
+    }
+
+    .topbar-title {
+      min-width: 0;
+    }
+
+    .topbar-title strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .topbar-title span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    h3 {
+      margin: 0 0 12px;
+      font-size: 19px;
+    }
+
+    p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .hero h2 {
+      max-width: 760px;
+      font-size: 42px;
+    }
+
+    .hero p {
+      max-width: 820px;
+      font-size: 16px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .badge {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .05);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .card,
+    .section {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .section {
+      margin-top: 16px;
+      padding: 24px;
+      scroll-margin-top: 86px;
+    }
+
+    .section[data-hidden="true"] { display: none; }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, .72fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--text);
+      background: rgba(255, 255, 255, .04);
+      font-size: 13px;
+    }
+
+    td {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .code-card {
+      position: relative;
+      margin: 12px 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(0, 0, 0, .28);
+    }
+
+    .code-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .copy-btn {
+      min-width: 64px;
+      height: 30px;
+      padding: 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    pre {
+      margin: 0;
+      padding: 16px;
+      overflow-x: auto;
+      color: #d9f7e8;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    [data-theme="light"] pre { color: #123226; }
+    :not(pre) > code {
+      padding: 2px 5px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .06);
+      color: var(--text);
+      font-size: .92em;
+    }
+
+    .tree {
+      color: var(--muted);
+    }
+
+    .callout {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      background: rgba(66, 211, 146, .08);
+    }
+
+    .callout.warn { border-left-color: var(--warn); background: rgba(255, 202, 107, .08); }
+    .callout.danger { border-left-color: var(--danger); background: rgba(255, 123, 137, .08); }
+
+    .mermaid-wrap {
+      overflow-x: auto;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .mermaid {
+      min-width: 560px;
+      text-align: center;
+    }
+
+    .empty-state {
+      display: none;
+      margin-top: 16px;
+      padding: 22px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty-state.show { display: block; }
+
+    @media (max-width: 980px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed;
+        transform: translateX(-105%);
+        transition: transform .18s ease;
+        width: min(320px, 88vw);
+      }
+      body.sidebar-open .sidebar { transform: translateX(0); }
+      .mobile-menu { display: inline-grid; place-items: center; }
+      .grid { grid-template-columns: 1fr; }
+      .split { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 34px; }
+      .content { padding: 18px; }
+      .topbar { margin: -18px -18px 18px; padding: 12px 18px; }
+    }
+
+    @media (max-width: 620px) {
+      .hero, .section { padding: 18px; }
+      .hero h2 { font-size: 28px; }
+      h2 { font-size: 24px; }
+      .topbar-title span { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Documentation navigation">
+      <div class="brand">
+        <div class="brand-mark">HES</div>
+        <div>
+          <h1>Hermes Enterprise Stack</h1>
+          <p>Phase 1 Documentation</p>
+        </div>
+      </div>
+
+      <label class="search-box">
+        <span>⌕</span>
+        <input id="search" type="search" placeholder="Search docs..." autocomplete="off">
+      </label>
+
+      <nav class="nav" id="nav">
+        <a href="#overview"><span>Overview</span><small>01</small></a>
+        <a href="#architecture"><span>Architecture</span><small>02</small></a>
+        <a href="#folder-tree"><span>Folder Tree</span><small>03</small></a>
+        <a href="#installation"><span>Installation</span><small>04</small></a>
+        <a href="#validation"><span>Validation</span><small>05</small></a>
+        <a href="#commands"><span>Command Reference</span><small>06</small></a>
+        <a href="#backup"><span>Backup & Restore</span><small>07</small></a>
+        <a href="#security"><span>Security</span><small>08</small></a>
+        <a href="#troubleshooting"><span>Troubleshooting</span><small>09</small></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        Phase 1 is infrastructure only. Hermes services and observability/data services are intentionally out of scope.
+      </div>
+    </aside>
+
+    <div class="content">
+      <header class="topbar">
+        <button class="mobile-menu" id="menuBtn" aria-label="Open navigation">☰</button>
+        <div class="topbar-title">
+          <strong>HES Phase 1</strong>
+          <span>Production-grade infrastructure foundation for future Hermes services.</span>
+        </div>
+        <button class="theme-toggle" id="themeBtn" type="button">Light</button>
+      </header>
+
+      <main>
+        <section class="hero doc-section" id="overview" data-search="overview phase 1 infrastructure docker compose traefik socket proxy ubuntu">
+          <p class="eyebrow">Interactive Documentation</p>
+          <h2>Hermes Enterprise Stack Phase 1</h2>
+          <p>Phase 1 provides the enterprise infrastructure foundation: modular Docker Compose V2 files, Traefik ingress, Docker socket proxy security, lifecycle scripts, environment-driven configuration, and operator documentation.</p>
+          <div class="badges">
+            <span class="badge">Ubuntu 24.04 LTS</span>
+            <span class="badge">Docker Compose V2</span>
+            <span class="badge">Glass UI</span>
+            <span class="badge">Vanilla JavaScript</span>
+            <span class="badge">No hardcoded secrets</span>
+            <span class="badge">Clean Architecture boundary</span>
+            <span class="badge">Infrastructure only</span>
+          </div>
+        </section>
+
+        <section class="section doc-section" data-search="scope included excluded grafana prometheus loki redis postgresql hermes services">
+          <h2>Phase 1 Scope</h2>
+          <div class="grid">
+            <article class="card">
+              <strong>Included</strong>
+              <p>Compose modules, networks, Traefik ingress, Docker socket proxy, runtime directories, Make targets, lifecycle scripts, docs, and CI validation.</p>
+            </article>
+            <article class="card">
+              <strong>Not Included</strong>
+              <p>No Hermes services. No Grafana, Prometheus, Loki, Redis, PostgreSQL, or other data-plane services.</p>
+            </article>
+            <article class="card">
+              <strong>Configuration</strong>
+              <p>All runtime values are controlled through `.env`. The file is parsed as data and only accepts `HES_*` keys.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section doc-section" id="architecture" data-search="architecture clean layers compose network security ingress traefik docker socket proxy mermaid">
+          <h2>Architecture</h2>
+          <p>HES separates infrastructure concerns from future application concerns. Compose modules describe resources, scripts operate lifecycle tasks, configuration is externalized, and runtime state stays outside source-controlled files.</p>
+
+          <div class="mermaid-wrap">
+            <pre class="mermaid">
+flowchart LR
+  Operator["Operator"] --> Make["Makefile"]
+  Make --> Scripts["Lifecycle Scripts"]
+  Scripts --> Compose["compose/compose.yml"]
+  Compose --> Network["network.yml"]
+  Compose --> Security["security.yml"]
+  Compose --> Ingress["traefik.yml"]
+  Ingress --> Public["hes-public"]
+  Ingress --> Internal["hes-internal"]
+  Security --> Internal
+  Ingress --> Proxy["Docker Socket Proxy"]
+  Proxy --> Docker["Docker API"]
+            </pre>
+          </div>
+
+          <div class="table-wrap" style="margin-top:16px">
+            <table>
+              <thead>
+                <tr><th>Layer</th><th>Responsibility</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Compose Orchestration</td><td>`compose/compose.yml` includes the infrastructure modules.</td></tr>
+                <tr><td>Network</td><td>`compose/network.yml` defines public and internal Docker networks.</td></tr>
+                <tr><td>Security</td><td>`compose/security.yml` exposes a constrained Docker API through a socket proxy.</td></tr>
+                <tr><td>Ingress</td><td>`compose/traefik.yml` provides HTTP and HTTPS entrypoints.</td></tr>
+                <tr><td>Operations</td><td>`scripts/` provides idempotent lifecycle commands.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section doc-section" id="folder-tree" data-search="folder tree project structure directories compose config scripts docs workspace logs backup storage ssl data github">
+          <h2>Folder Tree</h2>
+          <div class="code-card">
+            <div class="code-head"><span>Hermes-Enterprise/</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code class="tree">Hermes-Enterprise/
+├── compose/
+│   ├── compose.yml
+│   ├── network.yml
+│   ├── security.yml
+│   └── traefik.yml
+├── config/
+│   └── traefik/
+│       └── dynamic/
+│           └── security-headers.yml
+├── scripts/
+│   ├── lib/
+│   │   └── common.sh
+│   ├── install.sh
+│   ├── doctor.sh
+│   ├── repair.sh
+│   ├── validate.sh
+│   ├── update.sh
+│   ├── uninstall.sh
+│   ├── backup.sh
+│   └── restore.sh
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── BACKUP_RESTORE.md
+│   ├── DEVELOPMENT.md
+│   ├── OPERATIONS.md
+│   ├── PHASE1_REVIEW_REPORT.md
+│   ├── SECURITY.md
+│   └── Phase1.html
+├── workspace/
+├── logs/
+├── backup/
+├── storage/
+├── ssl/
+├── data/
+├── .github/
+├── .env.example
+├── .gitignore
+├── CHANGELOG.md
+├── Makefile
+└── README.md</code></pre>
+          </div>
+        </section>
+
+        <section class="section doc-section" id="installation" data-search="installation guide install ubuntu docker compose env make install quick start">
+          <h2>Installation Guide</h2>
+          <div class="split">
+            <div>
+              <p>Install on Ubuntu 24.04 LTS with Docker Engine and Docker Compose V2 available. Start from the example environment file, review values, then run the installer.</p>
+              <div class="callout warn">
+                Do not deploy with `example.com` values. Set `HES_ENVIRONMENT=production`, `HES_DOMAIN`, `HES_ADMIN_EMAIL`, exposed ports, and storage paths before production use.
+              </div>
+            </div>
+            <div class="code-card">
+              <div class="code-head"><span>Quick start</span><button class="copy-btn" type="button">Copy</button></div>
+              <pre><code>cp .env.example .env
+make doctor
+make validate
+make install</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="section doc-section" id="validation" data-search="validation guide validate shellcheck docker compose config crlf line endings doctor repair">
+          <h2>Validation Guide</h2>
+          <p>Validation checks Bash scripts, LF line endings, Docker availability, Docker Compose V2, and Compose configuration.</p>
+
+          <div class="code-card">
+            <div class="code-head"><span>Validate project</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>make validate</code></pre>
+          </div>
+
+          <div class="grid">
+            <article class="card">
+              <strong>Doctor</strong>
+              <p>Use `make doctor` to check host readiness, writable runtime paths, Docker daemon access, and Compose configuration.</p>
+            </article>
+            <article class="card">
+              <strong>Repair</strong>
+              <p>Use `make repair` to recreate missing `.env` and runtime directories. It can run before Docker is installed.</p>
+            </article>
+            <article class="card">
+              <strong>CI</strong>
+              <p>The GitHub workflow runs validation on Ubuntu 24.04 and installs `shellcheck` before executing `make validate`.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section doc-section" id="commands" data-search="command reference make install doctor validate repair update backup restore logs status clean uninstall">
+          <h2>Command Reference</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Command</th><th>Purpose</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>make install</code></td><td>Prepare directories and start Phase 1 infrastructure.</td></tr>
+                <tr><td><code>make doctor</code></td><td>Check host, Docker, Compose, env, and writable paths.</td></tr>
+                <tr><td><code>make validate</code></td><td>Validate scripts, line endings, and Compose configuration.</td></tr>
+                <tr><td><code>make repair</code></td><td>Recreate expected local directories and missing `.env`.</td></tr>
+                <tr><td><code>make update</code></td><td>Pull infrastructure images and restart the stack.</td></tr>
+                <tr><td><code>make backup</code></td><td>Create a timestamped backup archive.</td></tr>
+                <tr><td><code>make restore</code></td><td>Restore from `HES_RESTORE_ARCHIVE` or direct script argument.</td></tr>
+                <tr><td><code>make logs</code></td><td>Follow Docker Compose logs.</td></tr>
+                <tr><td><code>make status</code></td><td>Show Docker Compose service status.</td></tr>
+                <tr><td><code>make clean</code></td><td>Stop containers and remove orphan containers.</td></tr>
+                <tr><td><code>make uninstall</code></td><td>Stop and remove Phase 1 containers while preserving data by default.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section doc-section" id="backup" data-search="backup restore archive retention permissions hes restore archive trusted">
+          <h2>Backup & Restore</h2>
+          <p>Backups include `.env`, Compose files, config, TLS state, storage, and data. Archives are written with owner-only permissions because `.env` is included.</p>
+
+          <div class="grid">
+            <div class="code-card">
+              <div class="code-head"><span>Create backup</span><button class="copy-btn" type="button">Copy</button></div>
+              <pre><code>make backup</code></pre>
+            </div>
+            <div class="code-card">
+              <div class="code-head"><span>Restore with env</span><button class="copy-btn" type="button">Copy</button></div>
+              <pre><code>HES_RESTORE_ARCHIVE=backup/hes-backup-20260709T000000Z.tar.gz make restore</code></pre>
+            </div>
+            <div class="code-card">
+              <div class="code-head"><span>Restore directly</span><button class="copy-btn" type="button">Copy</button></div>
+              <pre><code>./scripts/restore.sh backup/hes-backup-20260709T000000Z.tar.gz</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="section doc-section" id="security" data-search="security secrets docker socket proxy no new privileges read only dashboard managed directories">
+          <h2>Security Notes</h2>
+          <div class="mermaid-wrap">
+            <pre class="mermaid">
+flowchart TD
+  Traefik["Traefik"] -->|service discovery| SocketProxy["Docker Socket Proxy"]
+  SocketProxy -->|read-limited API| DockerSock["/var/run/docker.sock"]
+  Traefik --> PublicNet["hes-public"]
+  Traefik --> InternalNet["hes-internal"]
+  SocketProxy --> InternalNet
+  Dashboard["Traefik Dashboard"] -. "not routed in Phase 1" .- Traefik
+            </pre>
+          </div>
+
+          <div class="grid">
+            <article class="card">
+              <strong>No Direct Docker Socket</strong>
+              <p>Traefik talks to the Docker socket proxy instead of mounting `/var/run/docker.sock` directly.</p>
+            </article>
+            <article class="card">
+              <strong>Container Hardening</strong>
+              <p>Services use `no-new-privileges`, dropped capabilities, read-only filesystems where supported, and process limits.</p>
+            </article>
+            <article class="card">
+              <strong>Managed Cleanup</strong>
+              <p>Runtime directories use `.hes-managed` markers. Cleanup refuses unmanaged directories.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section doc-section" id="troubleshooting" data-search="troubleshooting docker not found daemon compose shellcheck crlf ports permission acme letsencrypt">
+          <h2>Troubleshooting</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Symptom</th><th>Likely Cause</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>Required command not found: docker</code></td><td>Docker CLI is not installed or not in PATH.</td><td>Install Docker Engine and Docker Compose V2 on Ubuntu 24.04.</td></tr>
+                <tr><td><code>Docker daemon is not reachable</code></td><td>Docker service is stopped or permissions are missing.</td><td>Start Docker and ensure the operator can access the daemon.</td></tr>
+                <tr><td><code>CRLF line endings detected</code></td><td>Files were edited with Windows line endings.</td><td>Convert scripts, Compose files, and docs to LF.</td></tr>
+                <tr><td>Ports 80 or 443 fail to bind</td><td>Another service is using the ports.</td><td>Stop the conflicting service or change `HES_TRAEFIK_HTTP_PORT` / `HES_TRAEFIK_HTTPS_PORT`.</td></tr>
+                <tr><td>ACME certificates fail</td><td>Domain, DNS, email, or inbound HTTP access is wrong.</td><td>Check `HES_DOMAIN`, `HES_ADMIN_EMAIL`, DNS records, and firewall rules.</td></tr>
+                <tr><td>Cleanup refuses a directory</td><td>The directory is not marked with `.hes-managed`.</td><td>Run `make repair` or verify the path before allowing scripts to manage it.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout danger" style="margin-top:16px">
+            Restore only from trusted archives. The script validates paths, but backup archives can still contain sensitive local configuration.
+          </div>
+        </section>
+
+        <div class="empty-state" id="emptyState">No matching sections found.</div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    const search = document.getElementById('search');
+    const sections = [...document.querySelectorAll('.doc-section')];
+    const navLinks = [...document.querySelectorAll('.nav a')];
+    const emptyState = document.getElementById('emptyState');
+    const themeBtn = document.getElementById('themeBtn');
+    const menuBtn = document.getElementById('menuBtn');
+
+    const savedTheme = localStorage.getItem('hes-theme');
+    if (savedTheme) root.dataset.theme = savedTheme;
+    themeBtn.textContent = root.dataset.theme === 'dark' ? 'Light' : 'Dark';
+
+    themeBtn.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('hes-theme', root.dataset.theme);
+      themeBtn.textContent = root.dataset.theme === 'dark' ? 'Light' : 'Dark';
+      if (window.mermaid) {
+        mermaid.initialize({ startOnLoad: false, theme: root.dataset.theme === 'dark' ? 'dark' : 'default' });
+      }
+    });
+
+    menuBtn.addEventListener('click', () => {
+      document.body.classList.toggle('sidebar-open');
+    });
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
+    });
+
+    document.querySelectorAll('.copy-btn').forEach(button => {
+      button.addEventListener('click', async () => {
+        const code = button.closest('.code-card').querySelector('code').innerText;
+        await navigator.clipboard.writeText(code);
+        const old = button.textContent;
+        button.textContent = 'Copied';
+        setTimeout(() => { button.textContent = old; }, 1200);
+      });
+    });
+
+    search.addEventListener('input', () => {
+      const query = search.value.trim().toLowerCase();
+      let visible = 0;
+      sections.forEach(section => {
+        const haystack = `${section.innerText} ${section.dataset.search || ''}`.toLowerCase();
+        const match = !query || haystack.includes(query);
+        section.dataset.hidden = String(!match);
+        if (match) visible += 1;
+      });
+      emptyState.classList.toggle('show', visible === 0);
+    });
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        if (!id) return;
+        navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${id}`));
+      });
+    }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+
+    sections.forEach(section => observer.observe(section));
+
+    if (window.mermaid) {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: root.dataset.theme === 'dark' ? 'dark' : 'default',
+        securityLevel: 'strict'
+      });
+    }
+  </script>
+</body>
+</html>

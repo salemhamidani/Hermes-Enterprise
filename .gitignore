@@ -1,0 +1,33 @@
+# Hermes Enterprise Stack (HES)
+# File: .gitignore
+# Purpose: Keep generated runtime state, local secrets, and temporary files out of Git.
+
+.env
+.env.*
+!.env.example
+
+logs/*
+!logs/.gitkeep
+
+backup/*
+!backup/.gitkeep
+
+storage/*
+!storage/.gitkeep
+
+ssl/*
+!ssl/.gitkeep
+
+data/*
+!data/.gitkeep
+
+workspace/*
+!workspace/.gitkeep
+
+*.log
+*.tmp
+*.bak
+*.swp
+.hes-managed
+.DS_Store
+Thumbs.db

@@ -1,0 +1,29 @@
+# Hermes Enterprise Stack (HES)
+# File: compose/network.yml
+# Purpose: Define shared Docker networks for Phase 1 infrastructure.
+
+name: ${HES_COMPOSE_PROJECT_NAME:-hes}
+
+networks:
+  hes-public:
+    name: ${HES_PUBLIC_NETWORK:-hes-production-public}
+    driver: bridge
+    attachable: true
+    labels:
+      com.hermes.stack: "${HES_PROJECT_NAME:-hermes-enterprise}"
+      com.hermes.environment: "${HES_ENVIRONMENT:-production}"
+      com.hermes.phase: "1"
+      org.opencontainers.image.title: "Hermes Enterprise Stack Public Network"
+      org.opencontainers.image.description: "Public ingress network for HES infrastructure."
+
+  hes-internal:
+    name: ${HES_INTERNAL_NETWORK:-hes-production-internal}
+    driver: bridge
+    internal: true
+    attachable: false
+    labels:
+      com.hermes.stack: "${HES_PROJECT_NAME:-hermes-enterprise}"
+      com.hermes.environment: "${HES_ENVIRONMENT:-production}"
+      com.hermes.phase: "1"
+      org.opencontainers.image.title: "Hermes Enterprise Stack Internal Network"
+      org.opencontainers.image.description: "Internal-only network for HES infrastructure."

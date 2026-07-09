@@ -1,0 +1,12 @@
+# Hermes Enterprise Stack (HES)
+# File: .gitattributes
+# Purpose: Enforce stable text line endings for cross-platform collaboration.
+
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+Makefile text eol=lf

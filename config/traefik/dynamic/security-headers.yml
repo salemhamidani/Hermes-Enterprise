@@ -1,0 +1,23 @@
+# Hermes Enterprise Stack (HES)
+# File: config/traefik/dynamic/security-headers.yml
+# Purpose: Provide reusable Traefik security middleware for future services.
+
+http:
+  middlewares:
+    hes-security-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        frameDeny: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        customResponseHeaders:
+          X-Powered-By: ""
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      sniStrict: true

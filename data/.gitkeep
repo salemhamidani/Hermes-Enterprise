@@ -1,0 +1,3 @@
+# Hermes Enterprise Stack (HES)
+# File: data/.gitkeep
+# Purpose: Preserve the persistent data directory in Git.
