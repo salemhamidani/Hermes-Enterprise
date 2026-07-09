@@ -10,6 +10,8 @@ Hermes Enterprise Stack (HES) is an enterprise-grade infrastructure foundation f
 
 Phase 1 provides only the infrastructure shell: repository layout, modular Docker Compose V2 files, Traefik ingress, a Docker socket proxy security boundary, lifecycle scripts, and operational documentation.
 
+License: MIT
+
 ## Phase 1 Scope
 
 Included:
