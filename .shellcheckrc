@@ -1,0 +1,5 @@
+# Hermes Enterprise Stack (HES)
+# File: .shellcheckrc
+# Purpose: Configure ShellCheck for HES scripts.
+
+disable=SC2155

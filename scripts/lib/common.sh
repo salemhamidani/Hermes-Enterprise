@@ -5,8 +5,10 @@
 
 set -Eeuo pipefail
 
-readonly HES_COMMON_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly HES_PROJECT_ROOT="$(cd "${HES_COMMON_DIR}/../.." && pwd)"
+HES_COMMON_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly HES_COMMON_DIR
+HES_PROJECT_ROOT="$(cd "${HES_COMMON_DIR}/../.." && pwd)"
+readonly HES_PROJECT_ROOT
 readonly HES_ENV_FILE="${HES_PROJECT_ROOT}/.env"
 readonly HES_ENV_EXAMPLE="${HES_PROJECT_ROOT}/.env.example"
 readonly HES_COMPOSE_FILE="${HES_PROJECT_ROOT}/compose/compose.yml"
