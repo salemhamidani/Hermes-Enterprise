@@ -41,12 +41,7 @@ jobs:
             --config .github/markdownlint.json \
             --ignore node_modules \
             --ignore docs/Phase1.html \
-            "**/*.md" || \
-            echo "markdownlint config not found; using defaults" && \
-            markdownlint \
-              --ignore node_modules \
-              --ignore docs/Phase1.html \
-              "**/*.md" || true
+            "**/*.md"
 
   yaml-lint:
     name: YAML Lint
@@ -63,7 +58,7 @@ jobs:
       - name: Lint YAML files
         run: |
           yamllint \
-            -d "{extends: default, rules: {line-length: {max: 200}, document-start: disable}}" \
+            -d "{extends: default, rules: {line-length: {max: 200}, document-start: disable, new-line-at-end-of-file: require}}" \
             compose/ \
             config/ \
             .github/workflows/

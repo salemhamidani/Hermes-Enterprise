@@ -35,7 +35,12 @@ services:
     volumes:
       - ${HES_TRIVY_CACHE_DIR:-./storage/trivy}:/root/.cache/trivy
     command: >
-      sh -c "trivy image --skip-db-update --exit-code ${HES_TRIVY_EXIT_CODE:-1} --severity ${HES_TRIVY_SEVERITY:-CRITICAL,HIGH} --ignore-unfixed ${HES_TRIVY_SCAN_IMAGES:-traefik:v3.3 tecnativa/docker-socket-proxy:0.3.0}"
+      sh -c >
+        "trivy image --skip-db-update
+        --exit-code ${HES_TRIVY_EXIT_CODE:-1}
+        --severity ${HES_TRIVY_SEVERITY:-CRITICAL,HIGH}
+        --ignore-unfixed
+        ${HES_TRIVY_SCAN_IMAGES:-traefik:v3.3 tecnativa/docker-socket-proxy:0.3.0}"
     networks:
       - hes-internal
     logging:

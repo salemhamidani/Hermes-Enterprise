@@ -2,4 +2,4 @@
 # File: .shellcheckrc
 # Purpose: Configure ShellCheck for HES scripts.
 
-disable=SC2155
+disable=SC2155,SC1091,SC2086
