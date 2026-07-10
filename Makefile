@@ -4,7 +4,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: install doctor validate repair update backup restore logs status clean uninstall security-scan compose-validate
+.PHONY: install doctor validate repair update backup restore logs status restart clean uninstall security-scan compose-validate
 
 install:
 	./scripts/compose-up.sh
@@ -32,6 +32,9 @@ logs:
 
 status:
 	./scripts/compose-up.sh -- ps
+
+restart:
+	./scripts/compose-restart.sh
 
 clean:
 	./scripts/compose-down.sh

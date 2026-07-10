@@ -38,6 +38,16 @@ yamllint and markdownlint are advisory by design; their findings are recorded as
 
 ## Tools
 
+Shared configuration lives in version-controlled files so CI and local scans use the same policy:
+
+| Tool | Config |
+| --- | --- |
+| Trivy | `.trivyignore` |
+| Hadolint | `.hadolint.yaml` |
+| ShellCheck | `.shellcheckrc` |
+| yamllint | `.yamllint.yml` |
+| markdownlint | `.github/markdownlint.json` |
+
 ### Trivy (image vulnerability scanning)
 
 Checks container images for known CVEs using the upstream vulnerability database.
@@ -75,17 +85,17 @@ Static analysis for all `scripts/**/*.sh`.
 
 Validates syntax and style for every `*.yml` / `*.yaml` file.
 
-- **Run:** scans the project tree (excluding `.git/`).
+- **Run:** scans the project tree (excluding `.git/`) with `.yamllint.yml` when present.
 - **Install:** `pip install yamllint` (see <https://yamllint.readthedocs.io/>).
-- **Interpret:** the scanner disables `line-length` and `document-start` rules to match HES conventions; other findings are advisory.
+- **Interpret:** the scanner follows the shared config. Findings are advisory in the security scanner and enforced in CI lint workflows.
 
 ### markdownlint (Markdown linting)
 
 Validates Markdown style for every `*.md` file.
 
-- **Run:** scans the project tree (excluding `.git/`).
+- **Run:** scans the project tree (excluding `.git/`) with `.github/markdownlint.json` when present.
 - **Install:** `npm install -g markdownlint-cli` (see <https://github.com/igorshubovych/markdownlint-cli>).
-- **Interpret:** findings are advisory; add a `.markdownlint.json` config if you want to enforce rules in CI.
+- **Interpret:** findings are advisory in the security scanner and enforced in CI lint workflows.
 
 ## Reading the Output
 

@@ -114,7 +114,11 @@ scan_hadolint() {
     return
   fi
   log_info "Running Hadolint..."
-  run_capture hadolint "${dockerfiles[@]}"
+  if [[ -f "${HES_PROJECT_ROOT}/.hadolint.yaml" ]]; then
+    run_capture hadolint --config "${HES_PROJECT_ROOT}/.hadolint.yaml" "${dockerfiles[@]}"
+  else
+    run_capture hadolint "${dockerfiles[@]}"
+  fi
   scan_log "=== hadolint (rc=${CAP_RC}) ==="
   scan_log "${CAP_OUT}"
   if [[ "${CAP_RC}" -eq 0 ]]; then
@@ -163,9 +167,13 @@ scan_yamllint() {
     return
   fi
   log_info "Running yamllint..."
-  run_capture yamllint \
-    -d '{extends: default, rules: {line-length: disable, document-start: disable}}' \
-    "${files[@]}"
+  if [[ -f "${HES_PROJECT_ROOT}/.yamllint.yml" ]]; then
+    run_capture yamllint -c "${HES_PROJECT_ROOT}/.yamllint.yml" "${files[@]}"
+  else
+    run_capture yamllint \
+      -d '{extends: default, rules: {line-length: disable, document-start: disable}}' \
+      "${files[@]}"
+  fi
   scan_log "=== yamllint (rc=${CAP_RC}) ==="
   scan_log "${CAP_OUT}"
   if [[ "${CAP_RC}" -eq 0 ]]; then
@@ -186,7 +194,11 @@ scan_markdownlint() {
     return
   fi
   log_info "Running markdownlint..."
-  run_capture markdownlint "${files[@]}"
+  if [[ -f "${HES_PROJECT_ROOT}/.github/markdownlint.json" ]]; then
+    run_capture markdownlint --config "${HES_PROJECT_ROOT}/.github/markdownlint.json" "${files[@]}"
+  else
+    run_capture markdownlint "${files[@]}"
+  fi
   scan_log "=== markdownlint (rc=${CAP_RC}) ==="
   scan_log "${CAP_OUT}"
   if [[ "${CAP_RC}" -eq 0 ]]; then

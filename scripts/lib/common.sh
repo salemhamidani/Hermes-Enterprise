@@ -362,7 +362,7 @@ check_docker_compose() {
 # Run a long-running command with an animated spinner on stderr.
 # Usage: spinner <command> [args...]
 spinner() {
-  local spinstr='|/-\'
+  local spinstr="|/-\\"
   local delay="${HES_SPINNER_DELAY:-0.1}"
   local spin_pid
   (

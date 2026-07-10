@@ -1,0 +1,43 @@
+# Hermes Enterprise Stack (HES)
+# File: .github/workflows/markdownlint.yml
+# Purpose: Lint Markdown documentation using the shared markdownlint configuration.
+
+name: Markdown Lint
+
+"on":
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - "**/*.md"
+      - ".github/markdownlint.json"
+      - ".github/workflows/markdownlint.yml"
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "**/*.md"
+      - ".github/markdownlint.json"
+
+jobs:
+  markdownlint:
+    name: Markdown Lint
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+
+      - name: Lint Markdown files
+        run: |
+          markdownlint \
+            --config .github/markdownlint.json \
+            --ignore node_modules \
+            --ignore docs/Phase1.html \
+            "**/*.md"
