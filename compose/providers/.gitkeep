@@ -1,0 +1,3 @@
+# Hermes Enterprise Stack (HES)
+# File: compose/providers/.gitkeep
+# Purpose: Keep provider Compose reservation directory in Git without defining services.

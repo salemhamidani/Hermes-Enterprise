@@ -3,7 +3,7 @@
 # File: scripts/lib/common.sh
 # Purpose: Shared Bash utilities for idempotent Phase 1 operations.
 #
-# This library provides logging, environment loading, path resolution,
+# This library provides logging, environment and provider loading, path resolution,
 # directory management, and Docker Compose helpers shared by every HES
 # script. The Phase 1 technical-debt cleanup added: log-level filtering,
 # a central error handler, structured exit-code constants, a spinner, a
@@ -168,7 +168,7 @@ load_env() {
     declare -A env_overrides=()
 
     while IFS='=' read -r name value; do
-      if [[ "${name}" == HES_* ]]; then
+      if [[ "${name}" == HES_* || "${name}" == HERMES_* ]]; then
         env_overrides["${name}"]="${value}"
       fi
     done < <(env)
@@ -179,7 +179,7 @@ load_env() {
       [[ "${line}" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]] || die "Invalid .env line: ${line}" 65
       name="${line%%=*}"
       value="${line#*=}"
-      [[ "${name}" == HES_* ]] || die "Only HES_* variables are allowed in .env: ${name}" 65
+      [[ "${name}" == HES_* || "${name}" == HERMES_* ]] || die "Only HES_* and HERMES_* variables are allowed in .env: ${name}" 65
       value="${value%\"}"
       value="${value#\"}"
       value="${value%\'}"
@@ -362,7 +362,7 @@ check_docker_compose() {
 # Run a long-running command with an animated spinner on stderr.
 # Usage: spinner <command> [args...]
 spinner() {
-  local spinstr='|/-\'
+  local spinstr="|/-\\"
   local delay="${HES_SPINNER_DELAY:-0.1}"
   local spin_pid
   (

@@ -11,6 +11,7 @@ name: ShellCheck
       - develop
     paths:
       - "scripts/**"
+      - "runtime/**"
       - ".github/workflows/shellcheck.yml"
   push:
     branches:
@@ -18,6 +19,7 @@ name: ShellCheck
       - develop
     paths:
       - "scripts/**"
+      - "runtime/**"
 
 jobs:
   shellcheck:
@@ -38,19 +40,20 @@ jobs:
           shellcheck \
             scripts/*.sh \
             scripts/lib/*.sh \
-            scripts/install/*.sh
+            scripts/install/*.sh \
+            runtime/*.sh
 
       - name: Check line endings (reject CRLF)
         run: |
-          if grep -RIl $'\r' scripts/ --exclude-dir=.git; then
-            echo "::error::CRLF line endings detected in scripts/"
+          if grep -RIl $'\r' scripts/ runtime/ --exclude-dir=.git; then
+            echo "::error::CRLF line endings detected in scripts/ or runtime/"
             exit 1
           fi
 
       - name: Check shebang lines
         run: |
           shopt -s nullglob
-          for script in scripts/*.sh scripts/lib/*.sh scripts/install/*.sh; do
+          for script in scripts/*.sh scripts/lib/*.sh scripts/install/*.sh runtime/*.sh; do
             if ! head -1 "$script" | grep -q '^#!/usr/bin/env bash'; then
               echo "::error::Missing or invalid shebang in $script"
               exit 1

@@ -49,6 +49,40 @@ Purpose: Project Constitution — every decision, file, script, and contribution
 | Owner | salemhamidani |
 | Expected scale | 50+ Docker services |
 
+### Hermes Provider Layer Baseline
+
+Sprint 3.0 defines Hermes as a provider-selected capability, not a fixed Docker image. This section is reference and policy only; it does not authorize adding Hermes services during infrastructure-only phases.
+
+| Field | Value |
+| --- | --- |
+| Provider interface | `config/providers/interface.yml` |
+| Provider manifests | `config/providers/*.yml` |
+| Provider loader | `runtime/provider-loader.sh` |
+| Provider Compose reservation | `compose/providers/` |
+| Provider documentation | `docs/providers/` |
+| Supported reference provider | `nous-hermes` |
+| Reserved provider | `future-hermes` |
+| Custom provider | `custom-hermes` |
+
+Provider policy:
+
+- HES must select Hermes through `HERMES_PROVIDER` before any future implementation.
+- HES must not assume Hermes is one fixed Docker image.
+- `HERMES_REGISTRY`, `HERMES_IMAGE`, and `HERMES_VERSION` are provider inputs, not global architecture constants.
+- `nous-hermes` is a supported reference provider, not the only possible provider.
+- `future-hermes` is reserved until another verified provider is discovered.
+- `custom-hermes` requires explicit operator values and security review before use.
+- HES must never use `latest` or `main` for production Hermes provider versions.
+- Provider-specific Compose files must not be created outside an approved implementation sprint.
+- Upstream provider examples must not be copied verbatim when they conflict with HES standards such as no `container_name` and no default host networking.
+
+Upgrade policy:
+
+- Provider upgrades require a dedicated feature branch.
+- Review provider release notes, registry/tag availability, runtime entrypoint behavior, and security advisories before changing provider metadata.
+- CI must pass before merge.
+- Rollback to the previous provider metadata must be documented before release.
+
 ### Phase 1 Scope
 
 Phase 1 is **infrastructure-only**. No application services, data-plane services, or observability stacks are included.
@@ -154,7 +188,7 @@ No future service is added as an undocumented one-off.
 ### Environment File Standards
 
 - `.env` is parsed as data, not shell code.
-- Only `HES_*` variables are allowed.
+- Only `HES_*` and approved `HERMES_*` provider variables are allowed.
 - Use simple `HES_KEY=value` assignments.
 - No shell expansions, command substitutions, or source statements.
 - `.env` must never be committed to Git.
@@ -301,7 +335,7 @@ All shell scripts must:
 
 `scripts/lib/common.sh` provides:
 
-- `load_env` — Parse `.env` as data, export `HES_*` variables.
+- `load_env` — Parse `.env` as data, export `HES_*` and approved `HERMES_*` variables.
 - `validate_env` — Validate all environment values.
 - `setup_logging` — Initialize per-script log file.
 - `ensure_directories` — Create and mark runtime directories.
