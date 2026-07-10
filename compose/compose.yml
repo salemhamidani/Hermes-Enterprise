@@ -5,6 +5,6 @@
 name: ${HES_COMPOSE_PROJECT_NAME:-hes}
 
 include:
-  - path: ./network.yml
-  - path: ./security.yml
-  - path: ./traefik.yml
+  - path: compose/network.yml
+  - path: compose/security.yml
+  - path: compose/traefik.yml
