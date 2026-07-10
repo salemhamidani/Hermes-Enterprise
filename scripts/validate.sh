@@ -38,10 +38,15 @@ validate_env_example() {
     HES_WORKSPACE_DIR HES_LOG_DIR HES_BACKUP_DIR HES_STORAGE_DIR HES_SSL_DIR
     HES_DATA_DIR HES_CONFIG_DIR
     HES_COMPOSE_PROJECT_NAME HES_RESTART_POLICY
-    HES_PUBLIC_NETWORK HES_INTERNAL_NETWORK
+    HES_PUBLIC_NETWORK HES_FRONTEND_NETWORK HES_BACKEND_NETWORK
+    HES_MANAGEMENT_NETWORK HES_INTERNAL_NETWORK
     HES_TRAEFIK_IMAGE HES_TRAEFIK_HTTP_PORT HES_TRAEFIK_HTTPS_PORT
-    HES_TRAEFIK_LOG_LEVEL HES_TRAEFIK_ACCESS_LOG_ENABLED
-    HES_TRAEFIK_DOCKER_ENDPOINT HES_TRAEFIK_ACME_STORAGE
+    HES_TRAEFIK_LOG_LEVEL HES_TRAEFIK_LOG_FORMAT HES_TRAEFIK_ACCESS_LOG_ENABLED
+    HES_TRAEFIK_ACCESS_LOG_FILE HES_TRAEFIK_APP_LOG_FILE
+    HES_TRAEFIK_METRICS_ENABLED HES_TRAEFIK_METRICS_ENTRYPOINT
+    HES_TRAEFIK_PING_ENTRYPOINT HES_TRAEFIK_DOCKER_ENDPOINT
+    HES_TRAEFIK_CERT_RESOLVER HES_TRAEFIK_ACME_STORAGE
+    HES_TRAEFIK_ACME_CA_SERVER HES_TRAEFIK_ACME_STAGING_CA_SERVER
     HES_SOCKET_PROXY_IMAGE HES_SOCKET_PROXY_LOG_LEVEL
     HES_DOCKER_LOG_MAX_SIZE HES_DOCKER_LOG_MAX_FILE
     HES_BACKUP_RETENTION_DAYS HES_BACKUP_PREFIX HES_RESTORE_ARCHIVE
@@ -65,11 +70,15 @@ validate_directory_structure() {
     "$(runtime_path HES_WORKSPACE_DIR ./workspace)"
     "$(runtime_path HES_LOG_DIR ./logs)"
     "$(runtime_path HES_LOG_DIR ./logs)/traefik"
+    "$(runtime_path HES_LOG_DIR ./logs)/traefik/access"
+    "$(runtime_path HES_LOG_DIR ./logs)/traefik/application"
+    "$(runtime_path HES_LOG_DIR ./logs)/traefik/security"
     "$(runtime_path HES_BACKUP_DIR ./backup)"
     "$(runtime_path HES_STORAGE_DIR ./storage)"
     "$(runtime_path HES_SSL_DIR ./ssl)"
     "$(runtime_path HES_SSL_DIR ./ssl)/letsencrypt"
     "$(runtime_path HES_DATA_DIR ./data)"
+    "${HES_PROJECT_ROOT}/secrets"
   )
   local d
   for d in "${dirs[@]}"; do
@@ -111,6 +120,12 @@ validate_permissions() {
 validate_network_config() {
   [[ "${HES_PUBLIC_NETWORK:-hes-public}" =~ ^[a-z0-9][a-z0-9_.-]*$ ]] \
     || die "HES_PUBLIC_NETWORK is not a valid network name." 65
+  [[ "${HES_FRONTEND_NETWORK:-hes-frontend}" =~ ^[a-z0-9][a-z0-9_.-]*$ ]] \
+    || die "HES_FRONTEND_NETWORK is not a valid network name." 65
+  [[ "${HES_BACKEND_NETWORK:-hes-backend}" =~ ^[a-z0-9][a-z0-9_.-]*$ ]] \
+    || die "HES_BACKEND_NETWORK is not a valid network name." 65
+  [[ "${HES_MANAGEMENT_NETWORK:-hes-management}" =~ ^[a-z0-9][a-z0-9_.-]*$ ]] \
+    || die "HES_MANAGEMENT_NETWORK is not a valid network name." 65
   [[ "${HES_INTERNAL_NETWORK:-hes-internal}" =~ ^[a-z0-9][a-z0-9_.-]*$ ]] \
     || die "HES_INTERNAL_NETWORK is not a valid network name." 65
   log_success "Network configuration is valid."
@@ -157,6 +172,42 @@ validate_yaml_syntax() {
   fi
 }
 
+validate_traefik_config() {
+  local files=(
+    "config/traefik/traefik.yml"
+    "config/traefik/dynamic.yml"
+    "config/traefik/middlewares.yml"
+    "config/traefik/headers.yml"
+    "config/traefik/tls.yml"
+    "config/traefik/certificates.yml"
+    "config/traefik/accesslog.yml"
+    "config/traefik/metrics.yml"
+    "config/traefik/providers.yml"
+    "config/traefik/entrypoints.yml"
+  )
+  local file
+  for file in "${files[@]}"; do
+    [[ -f "${HES_PROJECT_ROOT}/${file}" ]] || die "Missing Traefik config file: ${file}" 66
+  done
+  grep -q "hes-security-headers" "${HES_PROJECT_ROOT}/config/traefik/dynamic.yml" || die "Missing Traefik security headers middleware." 65
+  grep -q "hes-rate-limit" "${HES_PROJECT_ROOT}/config/traefik/dynamic.yml" || die "Missing Traefik rate limit middleware." 65
+  grep -q "hes-compress" "${HES_PROJECT_ROOT}/config/traefik/dynamic.yml" || die "Missing Traefik compression middleware." 65
+  log_success "Traefik configuration files are complete."
+}
+
+validate_certificate_state() {
+  local le_dir acme_file
+  le_dir="$(runtime_path HES_SSL_DIR ./ssl)/letsencrypt"
+  acme_file="${le_dir}/acme.json"
+  [[ -d "${le_dir}" ]] || die "Missing ACME directory: ${le_dir}" 66
+  if [[ -f "${acme_file}" ]] && command -v stat >/dev/null 2>&1; then
+    local mode
+    mode="$(stat -c %a "${acme_file}" 2>/dev/null || true)"
+    [[ -z "${mode}" || "${mode}" == "600" ]] || die "ACME storage must be chmod 600 (got ${mode})." 73
+  fi
+  log_success "Certificate storage state is valid."
+}
+
 main() {
   log_info "Validating HES project files."
   require_command bash
@@ -174,6 +225,8 @@ main() {
   validate_network_config
   validate_ports
   validate_yaml_syntax
+  validate_traefik_config
+  validate_certificate_state
 
   if grep -RIl $'\r' "${HES_PROJECT_ROOT}" --exclude-dir=.git >/dev/null 2>&1; then
     die "CRLF line endings detected. Use LF line endings for Linux scripts and Compose files." 65

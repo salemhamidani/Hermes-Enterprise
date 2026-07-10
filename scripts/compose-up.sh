@@ -99,7 +99,7 @@ discover_compose_files() {
     if [[ "${priority_seen}" != *" ${base} "* ]]; then
       COMPOSE_FILES+=("${entry}")
     fi
-  done < <(find "${compose_dir}" -maxdepth 1 -type f -name '*.yml' ! -name 'compose.yml' | sort)
+  done < <(find "${compose_dir}" -maxdepth 1 -type f -name '*.yml' ! -name 'compose.yml' ! -name 'security-scan.yml' | sort)
 
   [[ ${#COMPOSE_FILES[@]} -gt 0 ]] || die "No compose module files found in ${compose_dir}." 66
 }

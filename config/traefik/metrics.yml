@@ -1,0 +1,13 @@
+# Hermes Enterprise Stack (HES)
+# File: config/traefik/metrics.yml
+# Purpose: Reference Traefik metrics and health endpoint preparation.
+
+ping:
+  entryPoint: traefik
+
+metrics:
+  prometheus:
+    entryPoint: metrics
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true

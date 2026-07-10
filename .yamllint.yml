@@ -1,0 +1,11 @@
+# Hermes Enterprise Stack (HES)
+# File: .yamllint.yml
+# Purpose: Shared yamllint configuration for local and CI validation.
+
+extends: default
+
+rules:
+  document-start: disable
+  line-length:
+    max: 200
+  new-line-at-end-of-file: enable

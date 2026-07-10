@@ -21,6 +21,10 @@ ssl/*
 data/*
 !data/.gitkeep
 
+secrets/*
+!secrets/README.md
+!secrets/.gitkeep
+
 workspace/*
 !workspace/.gitkeep
 

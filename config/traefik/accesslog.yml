@@ -1,0 +1,16 @@
+# Hermes Enterprise Stack (HES)
+# File: config/traefik/accesslog.yml
+# Purpose: Reference structured Traefik access logging policy.
+
+accessLog:
+  format: json
+  filePath: "/var/log/traefik/access/access.log"
+  bufferingSize: 100
+  fields:
+    defaultMode: keep
+    headers:
+      defaultMode: drop
+      names:
+        User-Agent: keep
+        X-Forwarded-For: keep
+        X-Request-Id: keep

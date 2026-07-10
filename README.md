@@ -10,6 +10,8 @@ Hermes Enterprise Stack (HES) is an enterprise-grade infrastructure foundation f
 
 Phase 1 provides only the infrastructure shell: repository layout, modular Docker Compose V2 files, Traefik ingress, a Docker socket proxy security boundary, lifecycle scripts, and operational documentation.
 
+Sprint 2 adds the security foundation for version `1.1.0`: production network segmentation, hardened Traefik middleware, TLS and ACME preparation, separated logs, Docker Secrets preparation, and upgraded validation.
+
 License: MIT
 
 ## Phase 1 Scope
@@ -18,6 +20,8 @@ Included:
 
 - Modular Docker Compose Specification files.
 - Traefik reverse proxy infrastructure.
+- Sprint 2 security foundation with frontend, backend, management, and internal networks.
+- Reusable Traefik security headers, rate limit, compression, TLS, metrics, and ping preparation.
 - Docker socket proxy for reduced Docker API exposure.
 - Environment-driven configuration through `.env`.
 - Idempotent Bash lifecycle scripts for Ubuntu 24.04 LTS.
@@ -93,4 +97,4 @@ Then update the domain, admin email, exposed ports, and storage paths for your e
 
 ## Operations
 
-Read [Operations](docs/OPERATIONS.md), [Security](docs/SECURITY.md), [Backup and Restore](docs/BACKUP_RESTORE.md), [Compose Conventions](compose/README.md), and the [Audit Report](AUDIT_REPORT.md) before deploying beyond a lab environment.
+Read [Operations](docs/OPERATIONS.md), [Security](SecurityGuide.md), [Traefik](TraefikGuide.md), [TLS](TLSGuide.md), [Networking](NetworkingGuide.md), [Backup and Restore](docs/BACKUP_RESTORE.md), [Compose Conventions](compose/README.md), and the [Audit Report](AUDIT_REPORT.md) before deploying beyond a lab environment.

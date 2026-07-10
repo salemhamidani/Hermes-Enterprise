@@ -1,6 +1,6 @@
 # Hermes Enterprise Stack (HES)
 # File: compose/network.yml
-# Purpose: Define shared Docker networks for Phase 1 infrastructure.
+# Purpose: Define production Docker networks for Sprint 2 security foundation.
 
 name: ${HES_COMPOSE_PROJECT_NAME:-hes}
 
@@ -13,8 +13,47 @@ networks:
       com.hermes.stack: "${HES_PROJECT_NAME:-hermes-enterprise}"
       com.hermes.environment: "${HES_ENVIRONMENT:-production}"
       com.hermes.phase: "1"
+      com.hermes.network.role: "public-compatibility"
       org.opencontainers.image.title: "Hermes Enterprise Stack Public Network"
-      org.opencontainers.image.description: "Public ingress network for HES infrastructure."
+      org.opencontainers.image.description: "Backward-compatible public ingress network retained for existing operators."
+
+  hes-frontend:
+    name: ${HES_FRONTEND_NETWORK:-hes-production-frontend}
+    driver: bridge
+    attachable: true
+    labels:
+      com.hermes.stack: "${HES_PROJECT_NAME:-hermes-enterprise}"
+      com.hermes.environment: "${HES_ENVIRONMENT:-production}"
+      com.hermes.phase: "1"
+      com.hermes.network.role: "frontend"
+      org.opencontainers.image.title: "Hermes Enterprise Stack Frontend Network"
+      org.opencontainers.image.description: "Public ingress network for Traefik and future public services."
+
+  hes-backend:
+    name: ${HES_BACKEND_NETWORK:-hes-production-backend}
+    driver: bridge
+    internal: true
+    attachable: false
+    labels:
+      com.hermes.stack: "${HES_PROJECT_NAME:-hermes-enterprise}"
+      com.hermes.environment: "${HES_ENVIRONMENT:-production}"
+      com.hermes.phase: "1"
+      com.hermes.network.role: "backend"
+      org.opencontainers.image.title: "Hermes Enterprise Stack Backend Network"
+      org.opencontainers.image.description: "Private backend network reserved for future Hermes services."
+
+  hes-management:
+    name: ${HES_MANAGEMENT_NETWORK:-hes-production-management}
+    driver: bridge
+    internal: true
+    attachable: false
+    labels:
+      com.hermes.stack: "${HES_PROJECT_NAME:-hermes-enterprise}"
+      com.hermes.environment: "${HES_ENVIRONMENT:-production}"
+      com.hermes.phase: "1"
+      com.hermes.network.role: "management"
+      org.opencontainers.image.title: "Hermes Enterprise Stack Management Network"
+      org.opencontainers.image.description: "Internal management network for Traefik and Docker socket proxy."
 
   hes-internal:
     name: ${HES_INTERNAL_NETWORK:-hes-production-internal}
@@ -25,5 +64,6 @@ networks:
       com.hermes.stack: "${HES_PROJECT_NAME:-hermes-enterprise}"
       com.hermes.environment: "${HES_ENVIRONMENT:-production}"
       com.hermes.phase: "1"
+      com.hermes.network.role: "internal"
       org.opencontainers.image.title: "Hermes Enterprise Stack Internal Network"
-      org.opencontainers.image.description: "Internal-only network for HES infrastructure."
+      org.opencontainers.image.description: "Internal-only reserved network for future infrastructure modules."
