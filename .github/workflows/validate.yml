@@ -1,25 +1,28 @@
 # Hermes Enterprise Stack (HES)
 # File: .github/workflows/validate.yml
-# Purpose: Validate Phase 1 scripts and Compose configuration in GitHub Actions.
+# Purpose: Validate scripts, configuration, and Docker Compose files.
 
 name: Validate
 
 on:
   pull_request:
+    branches:
+      - main
+      - develop
   push:
     branches:
       - main
+      - develop
 
 jobs:
   validate:
     name: Validate HES
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install shellcheck
-        run: sudo apt-get update && sudo apt-get install -y shellcheck
 
       - name: Prepare env
         run: cp .env.example .env

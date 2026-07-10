@@ -1,0 +1,55 @@
+# Hermes Enterprise Stack (HES)
+# File: .github/workflows/shellcheck.yml
+# Purpose: Run ShellCheck on all Bash lifecycle scripts.
+
+name: ShellCheck
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - "scripts/**"
+      - ".github/workflows/shellcheck.yml"
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "scripts/**"
+
+jobs:
+  shellcheck:
+    name: ShellCheck Scripts
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck
+        run: |
+          shellcheck \
+            scripts/*.sh \
+            scripts/lib/*.sh
+
+      - name: Check line endings (reject CRLF)
+        run: |
+          if grep -RIl $'\r' scripts/ --exclude-dir=.git; then
+            echo "::error::CRLF line endings detected in scripts/"
+            exit 1
+          fi
+
+      - name: Check shebang lines
+        run: |
+          for script in scripts/*.sh scripts/lib/*.sh; do
+            if ! head -1 "$script" | grep -q '^#!/usr/bin/env bash'; then
+              echo "::error::Missing or invalid shebang in $script"
+              exit 1
+            fi
+          done

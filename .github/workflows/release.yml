@@ -1,0 +1,66 @@
+# Hermes Enterprise Stack (HES)
+# File: .github/workflows/release.yml
+# Purpose: Create GitHub releases when code is merged into main and tagged.
+
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare env
+        run: cp .env.example .env
+
+      - name: Validate before release
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          make validate
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            # Use short commit SHA for branch pushes
+            echo "version=dev-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+          if [[ -n "$PREVIOUS_TAG" ]]; then
+            git log "$PREVIOUS_TAG"..HEAD --pretty=format:"- %s" > CHANGELOG_RELEASE.txt
+          else
+            git log --pretty=format:"- %s" > CHANGELOG_RELEASE.txt
+          fi
+          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          cat CHANGELOG_RELEASE.txt >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Hermes Enterprise Stack ${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.body }}
+          draft: false
+          prerelease: ${{ github.ref_type != 'tag' }}
+          generate_release_notes: true
