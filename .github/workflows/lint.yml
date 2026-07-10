@@ -58,7 +58,7 @@ jobs:
       - name: Lint YAML files
         run: |
           yamllint \
-            -d "{extends: default, rules: {line-length: {max: 200}, document-start: disable, new-line-at-end-of-file: require}}" \
+            -d "{extends: default, rules: {line-length: {max: 200}, document-start: disable, new-line-at-end-of-file: enable}}" \
             compose/ \
             config/ \
             .github/workflows/
