@@ -200,7 +200,7 @@ validate_certificate_state() {
   le_dir="$(runtime_path HES_SSL_DIR ./ssl)/letsencrypt"
   acme_file="${le_dir}/acme.json"
   [[ -d "${le_dir}" ]] || die "Missing ACME directory: ${le_dir}" 66
-  if [[ -f "${acme_file}" && command -v stat >/dev/null 2>&1 ]]; then
+  if [[ -f "${acme_file}" ]] && command -v stat >/dev/null 2>&1; then
     local mode
     mode="$(stat -c %a "${acme_file}" 2>/dev/null || true)"
     [[ -z "${mode}" || "${mode}" == "600" ]] || die "ACME storage must be chmod 600 (got ${mode})." 73

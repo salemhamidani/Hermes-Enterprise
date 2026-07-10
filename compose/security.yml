@@ -57,6 +57,7 @@ services:
         limits:
           cpus: "0.25"
           memory: 128M
+          pids: 128
         reservations:
           memory: 32M
     logging:

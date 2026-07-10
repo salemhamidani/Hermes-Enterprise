@@ -24,19 +24,19 @@ Sprint 2 implements the production security foundation for HES version 1.1.0 whi
 
 ## Architecture Score
 
-**9/10**
+Score: 9/10
 
 The sprint follows the existing architecture and does not introduce application services. The only deduction is that HA and externalized secret management remain future work by design.
 
 ## Security Score
 
-**9/10**
+Score: 9/10
 
 The sprint strengthens Docker API isolation, network segmentation, TLS, security headers, rate limiting, logs, and validation. Credential rotation for previously exposed user tokens remains an external operator action.
 
 ## Maintainability Score
 
-**8/10**
+Score: 8/10
 
 The implementation is configuration-driven and documented. Future improvement should reduce duplication between Traefik reference config files and active dynamic config once a config-file migration is approved.
 
