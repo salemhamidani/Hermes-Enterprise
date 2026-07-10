@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Hermes Enterprise Stack (HES) -->
+<!-- File: docs/assets/architecture-overview.svg -->
+<!-- Purpose: Full Phase 1 infrastructure architecture. Dark-theme compatible. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 780" width="1120" height="780" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <title>Hermes Enterprise Stack — Architecture Overview</title>
+  <desc>Phase 1 infrastructure architecture: operator, Compose modules, Traefik ingress, Docker socket proxy, network segmentation, future services, and runtime state.</desc>
+
+  <rect width="1120" height="780" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="560" y="34" text-anchor="middle" font-size="20" font-weight="700" fill="#e6edf3">Hermes Enterprise Stack — Phase 1 Architecture Overview</text>
+
+  <!-- ===== Operator Layer ===== -->
+  <rect x="30" y="58" width="1060" height="92" rx="10" fill="#161b22" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="48" y="80" font-size="12" font-weight="700" fill="#3b82f6" letter-spacing="1.5">OPERATOR LAYER</text>
+  <rect x="50" y="92" width="180" height="44" rx="8" fill="#1e3a5f" stroke="#3b82f6"/>
+  <text x="140" y="112" text-anchor="middle" font-size="13" font-weight="600" fill="#93c5fd">Operator</text>
+  <rect x="250" y="92" width="180" height="44" rx="8" fill="#1e3a5f" stroke="#3b82f6"/>
+  <text x="340" y="112" text-anchor="middle" font-size="13" font-weight="600" fill="#93c5fd">Makefile</text>
+  <rect x="450" y="92" width="620" height="44" rx="8" fill="#1e3a5f" stroke="#3b82f6"/>
+  <text x="760" y="112" text-anchor="middle" font-size="13" font-weight="600" fill="#93c5fd">Bash Lifecycle Scripts · install · validate · doctor · repair · update · backup · restore · uninstall</text>
+
+  <!-- arrow operator -> compose -->
+  <line x1="560" y1="150" x2="560" y2="172" stroke="#8b949e" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===== Docker Compose Layer ===== -->
+  <rect x="30" y="172" width="1060" height="100" rx="10" fill="#161b22" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="48" y="194" font-size="12" font-weight="700" fill="#8b5cf6" letter-spacing="1.5">DOCKER COMPOSE V2</text>
+  <rect x="50" y="206" width="300" height="52" rx="8" fill="#2d2150" stroke="#8b5cf6"/>
+  <text x="200" y="228" text-anchor="middle" font-size="13" font-weight="600" fill="#c4b5fd">compose.yml</text>
+  <text x="200" y="246" text-anchor="middle" font-size="11" fill="#a78bfa">orchestrates includes</text>
+  <rect x="380" y="206" width="200" height="52" rx="8" fill="#2d2150" stroke="#8b5cf6"/>
+  <text x="480" y="228" text-anchor="middle" font-size="13" font-weight="600" fill="#c4b5fd">network.yml</text>
+  <text x="480" y="246" text-anchor="middle" font-size="11" fill="#a78bfa">public + internal</text>
+  <rect x="610" y="206" width="200" height="52" rx="8" fill="#2d2150" stroke="#8b5cf6"/>
+  <text x="710" y="228" text-anchor="middle" font-size="13" font-weight="600" fill="#c4b5fd">security.yml</text>
+  <text x="710" y="246" text-anchor="middle" font-size="11" fill="#a78bfa">socket proxy</text>
+  <rect x="840" y="206" width="220" height="52" rx="8" fill="#2d2150" stroke="#8b5cf6"/>
+  <text x="950" y="228" text-anchor="middle" font-size="13" font-weight="600" fill="#c4b5fd">traefik.yml</text>
+  <text x="950" y="246" text-anchor="middle" font-size="11" fill="#a78bfa">ingress + discovery</text>
+
+  <!-- arrows compose -> runtime -->
+  <line x1="480" y1="272" x2="480" y2="300" stroke="#8b949e" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="710" y1="272" x2="710" y2="300" stroke="#8b949e" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="950" y1="272" x2="950" y2="300" stroke="#8b949e" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===== Infrastructure Runtime ===== -->
+  <rect x="30" y="300" width="1060" height="150" rx="10" fill="#161b22" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="48" y="322" font-size="12" font-weight="700" fill="#10b981" letter-spacing="1.5">INFRASTRUCTURE RUNTIME</text>
+
+  <!-- Traefik -->
+  <rect x="50" y="334" width="220" height="100" rx="8" fill="#064e3b" stroke="#10b981"/>
+  <text x="160" y="362" text-anchor="middle" font-size="14" font-weight="700" fill="#6ee7b7">Traefik v3</text>
+  <text x="160" y="384" text-anchor="middle" font-size="11" fill="#a7f3d0">HTTP :80 · HTTPS :443</text>
+  <text x="160" y="402" text-anchor="middle" font-size="11" fill="#a7f3d0">TLS · redirect · headers</text>
+  <text x="160" y="420" text-anchor="middle" font-size="11" fill="#a7f3d0">dashboard disabled</text>
+
+  <!-- Socket Proxy -->
+  <rect x="300" y="334" width="220" height="100" rx="8" fill="#4c0519" stroke="#ef4444"/>
+  <text x="410" y="362" text-anchor="middle" font-size="14" font-weight="700" fill="#fca5a5">Docker Socket Proxy</text>
+  <text x="410" y="384" text-anchor="middle" font-size="11" fill="#fecaca">tecnativa/docker-socket-proxy</text>
+  <text x="410" y="402" text-anchor="middle" font-size="11" fill="#fecaca">reduced API permissions</text>
+  <text x="410" y="420" text-anchor="middle" font-size="11" fill="#fecaca">no raw socket mount</text>
+
+  <!-- Docker API -->
+  <rect x="560" y="358" width="170" height="52" rx="8" fill="#3b1d1d" stroke="#ef4444" stroke-dasharray="5 3"/>
+  <text x="645" y="382" text-anchor="middle" font-size="13" font-weight="600" fill="#fca5a5">Docker API</text>
+  <text x="645" y="400" text-anchor="middle" font-size="11" fill="#fecaca">read-only</text>
+
+  <!-- discovery arrow proxy -> docker api -->
+  <line x1="520" y1="384" x2="558" y2="384" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowRed)"/>
+  <!-- discovery arrow docker api -> traefik (curved) -->
+  <path d="M 645 358 Q 645 320 380 320 Q 160 320 160 334" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowCyan)"/>
+  <text x="400" y="316" font-size="10" fill="#67e8f9">discovery metadata (via proxy)</text>
+
+  <!-- Networks -->
+  <rect x="760" y="334" width="180" height="44" rx="8" fill="#083344" stroke="#06b6d4"/>
+  <text x="850" y="354" text-anchor="middle" font-size="12" font-weight="600" fill="#67e8f9">hes-public</text>
+  <text x="850" y="370" text-anchor="middle" font-size="10" fill="#a5f3fc">bridge · attachable</text>
+  <rect x="760" y="390" width="180" height="44" rx="8" fill="#083344" stroke="#06b6d4"/>
+  <text x="850" y="410" text-anchor="middle" font-size="12" font-weight="600" fill="#67e8f9">hes-internal</text>
+  <text x="850" y="426" text-anchor="middle" font-size="10" fill="#a5f3fc">bridge · internal:true</text>
+
+  <!-- network connections -->
+  <line x1="270" y1="360" x2="758" y2="356" stroke="#06b6d4" stroke-width="1.5"/>
+  <line x1="270" y1="400" x2="758" y2="412" stroke="#06b6d4" stroke-width="1.5"/>
+  <line x1="520" y1="410" x2="758" y2="416" stroke="#06b6d4" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- Runtime state (right side) -->
+  <rect x="960" y="334" width="120" height="100" rx="8" fill="#2d2150" stroke="#f59e0b"/>
+  <text x="1020" y="352" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">STATE</text>
+  <text x="1020" y="370" text-anchor="middle" font-size="10" fill="#fcd34d">logs/</text>
+  <text x="1020" y="384" text-anchor="middle" font-size="10" fill="#fcd34d">backup/</text>
+  <text x="1020" y="398" text-anchor="middle" font-size="10" fill="#fcd34d">ssl/</text>
+  <text x="1020" y="412" text-anchor="middle" font-size="10" fill="#fcd34d">storage/</text>
+  <text x="1020" y="426" text-anchor="middle" font-size="10" fill="#fcd34d">data/</text>
+
+  <!-- ===== Future Services ===== -->
+  <rect x="30" y="472" width="900" height="100" rx="10" fill="#161b22" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="48" y="494" font-size="12" font-weight="700" fill="#9ca3af" letter-spacing="1.5">FUTURE HERMES SERVICES (later milestones)</text>
+  <rect x="50" y="508" width="270" height="50" rx="8" fill="#2d333b" stroke="#6b7280" stroke-dasharray="5 3"/>
+  <text x="185" y="530" text-anchor="middle" font-size="12" font-weight="600" fill="#d1d5db">hermes-api.yml</text>
+  <text x="185" y="546" text-anchor="middle" font-size="10" fill="#9ca3af">public-facing</text>
+  <rect x="340" y="508" width="270" height="50" rx="8" fill="#2d333b" stroke="#6b7280" stroke-dasharray="5 3"/>
+  <text x="475" y="530" text-anchor="middle" font-size="12" font-weight="600" fill="#d1d5db">hermes-worker.yml</text>
+  <text x="475" y="546" text-anchor="middle" font-size="10" fill="#9ca3af">internal-only</text>
+  <rect x="630" y="508" width="280" height="50" rx="8" fill="#2d333b" stroke="#6b7280" stroke-dasharray="5 3"/>
+  <text x="770" y="530" text-anchor="middle" font-size="12" font-weight="600" fill="#d1d5db">observability.yml</text>
+  <text x="770" y="546" text-anchor="middle" font-size="10" fill="#9ca3af">metrics · logs · alerts</text>
+
+  <!-- future attach arrows (dashed) -->
+  <line x1="185" y1="508" x2="850" y2="380" stroke="#6b7280" stroke-width="1" stroke-dasharray="3 4"/>
+  <line x1="475" y1="508" x2="850" y2="420" stroke="#6b7280" stroke-width="1" stroke-dasharray="3 4"/>
+  <line x1="770" y1="508" x2="850" y2="428" stroke="#6b7280" stroke-width="1" stroke-dasharray="3 4"/>
+
+  <!-- ===== Legend ===== -->
+  <rect x="30" y="600" width="1060" height="160" rx="10" fill="#161b22" stroke="#30363d"/>
+  <text x="48" y="622" font-size="12" font-weight="700" fill="#8b949e" letter-spacing="1.5">LEGEND &amp; FLOW</text>
+
+  <rect x="50" y="636" width="14" height="14" rx="3" fill="#1e3a5f" stroke="#3b82f6"/>
+  <text x="72" y="648" font-size="11" fill="#e6edf3">Operator / automation layer</text>
+  <rect x="290" y="636" width="14" height="14" rx="3" fill="#2d2150" stroke="#8b5cf6"/>
+  <text x="312" y="648" font-size="11" fill="#e6edf3">Compose modules</text>
+  <rect x="490" y="636" width="14" height="14" rx="3" fill="#064e3b" stroke="#10b981"/>
+  <text x="512" y="648" font-size="11" fill="#e6edf3">Ingress (Traefik)</text>
+  <rect x="660" y="636" width="14" height="14" rx="3" fill="#4c0519" stroke="#ef4444"/>
+  <text x="682" y="648" font-size="11" fill="#e6edf3">Security boundary</text>
+  <rect x="820" y="636" width="14" height="14" rx="3" fill="#083344" stroke="#06b6d4"/>
+  <text x="842" y="648" font-size="11" fill="#e6edf3">Docker networks</text>
+  <rect x="50" y="664" width="14" height="14" rx="3" fill="#2d333b" stroke="#6b7280" stroke-dasharray="3 2"/>
+  <text x="72" y="676" font-size="11" fill="#e6edf3">Future services (dashed = not yet present)</text>
+  <rect x="390" y="664" width="14" height="14" rx="3" fill="#2d2150" stroke="#f59e0b"/>
+  <text x="412" y="676" font-size="11" fill="#e6edf3">Runtime state directories</text>
+
+  <text x="50" y="710" font-size="11" fill="#8b949e">Flow: Operator &#8594; Makefile &#8594; Bash lifecycle scripts &#8594; Docker Compose V2 &#8594; infrastructure modules &#8594; Traefik + socket proxy &#8594; segmented networks &#8594; future services.</text>
+  <text x="50" y="730" font-size="11" fill="#8b949e">Traefik discovers services through the Docker socket proxy, never the raw Docker socket. Future services attach only to the networks they require.</text>
+  <text x="50" y="748" font-size="10" fill="#6e7681">Generated for HES Phase 1 · see docs/ARCHITECTURE.md for the full narrative.</text>
+
+  <!-- arrow markers -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b949e"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"/>
+    </marker>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4"/>
+    </marker>
+  </defs>
+</svg>

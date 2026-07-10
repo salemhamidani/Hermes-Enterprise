@@ -1,0 +1,21 @@
+# Hermes Enterprise Stack (HES)
+# File: config/traefik/dynamic.yml
+# Purpose: Placeholder root for Traefik dynamic configuration.
+#
+# Phase 1 loads dynamic configuration from config/traefik/dynamic/ (see
+# dynamic/security-headers.yml). This file documents the structure for a future
+# consolidated dynamic configuration root. Everything below is commented out so
+# that no routers, services, or middlewares are enabled here.
+
+# http:
+#   routers: {}
+#   services: {}
+#   middlewares: {}
+
+# tcp:
+#   routers: {}
+#   services: {}
+
+# tls:
+#   options: {}
+#   stores: {}

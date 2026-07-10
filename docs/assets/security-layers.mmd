@@ -1,0 +1,47 @@
+%% Hermes Enterprise Stack (HES)
+%% File: docs/assets/security-layers.mmd
+%% Purpose: Mermaid diagram of the security layers.
+%% Dark-theme compatible. Render with: mmdc -i security-layers.mmd -o security-layers.png
+
+flowchart TD
+    Internet["Internet"]
+
+    subgraph L1["Layer 1 · Host Boundary"]
+        Firewall["Host Firewall / Port Policy<br/>Only 80 · 443 exposed"]
+    end
+
+    subgraph L2["Layer 2 · Ingress Boundary"]
+        Traefik["Traefik v3<br/>HTTPS redirect · TLS termination<br/>Security headers middleware"]
+    end
+
+    subgraph L3["Layer 3 · Network Segmentation"]
+        Public["hes-public<br/>ingress-facing"]
+        Internal["hes-internal<br/>internal:true · not attachable"]
+    end
+
+    subgraph L4["Layer 4 · API Surface Reduction"]
+        SocketProxy["Docker Socket Proxy<br/>reduced permissions<br/>no raw socket mount"]
+        DockerAPI["Read-Limited Docker API"]
+    end
+
+    subgraph L5["Layer 5 · Validation & Policy"]
+        Validate["make validate<br/>no container_name · no latest<br/>healthchecks · log rotation · labels"]
+    end
+
+    subgraph L6["Layer 6 · Recovery Boundary"]
+        Backup["make backup<br/>chmod 600 archives"]
+        Restore["make restore<br/>staged extraction · path validation"]
+    end
+
+    Internet --> Firewall
+    Firewall --> Traefik
+    Traefik --> Public
+    Traefik --> Internal
+    SocketProxy --> Internal
+    SocketProxy --> DockerAPI
+    DockerAPI -.->|discovery metadata| Traefik
+
+    Validate -.->|guards| Traefik
+    Validate -.->|guards| SocketProxy
+    Backup -.->|protects| Internal
+    Restore -.->|recovers| Internal

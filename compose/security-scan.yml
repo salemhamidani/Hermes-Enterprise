@@ -1,0 +1,57 @@
+# Hermes Enterprise Stack (HES)
+# File: compose/security-scan.yml
+# Purpose: Optional Compose module for one-shot Trivy image vulnerability scanning.
+#
+# This module is NOT included by compose/compose.yml. Run it explicitly:
+#   docker compose --env-file .env -f compose/security-scan.yml run --rm trivy
+#
+# The scanner joins the hes-internal network only (no public ingress). Because
+# hes-internal is an internal network, the Trivy vulnerability database and the
+# target images must already be present locally. Seed the cache volume by running
+# scripts/security-scan.sh (host Trivy) or a `trivy image --download-db-only` run
+# with external network access before using this module.
+
+name: ${HES_COMPOSE_PROJECT_NAME:-hes}
+
+services:
+  trivy:
+    image: ${HES_TRIVY_IMAGE:-aquasec/trivy:0.55.0}
+    restart: "no"
+    init: true
+    read_only: true
+    pids_limit: 256
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp
+    environment:
+      TRIVY_CACHE_DIR: /root/.cache/trivy
+      TRIVY_FORMAT: ${HES_TRIVY_FORMAT:-table}
+      TRIVY_SEVERITY: ${HES_TRIVY_SEVERITY:-CRITICAL,HIGH}
+      TRIVY_EXIT_CODE: ${HES_TRIVY_EXIT_CODE:-1}
+      TRIVY_IGNORE_UNFIXED: ${HES_TRIVY_IGNORE_UNFIXED:-true}
+    volumes:
+      - ${HES_TRIVY_CACHE_DIR:-./storage/trivy}:/root/.cache/trivy
+    command: >
+      sh -c "trivy image --skip-db-update --exit-code ${HES_TRIVY_EXIT_CODE:-1} --severity ${HES_TRIVY_SEVERITY:-CRITICAL,HIGH} --ignore-unfixed ${HES_TRIVY_SCAN_IMAGES:-traefik:v3.3 tecnativa/docker-socket-proxy:0.3.0}"
+    networks:
+      - hes-internal
+    logging:
+      driver: json-file
+      options:
+        max-size: "${HES_DOCKER_LOG_MAX_SIZE:-10m}"
+        max-file: "${HES_DOCKER_LOG_MAX_FILE:-5}"
+    labels:
+      com.hermes.stack: "${HES_PROJECT_NAME:-hermes-enterprise}"
+      com.hermes.environment: "${HES_ENVIRONMENT:-production}"
+      com.hermes.phase: "1"
+      com.hermes.component: "security-scan"
+      org.opencontainers.image.title: "Hermes Enterprise Stack Trivy Scanner"
+      org.opencontainers.image.description: "One-shot Trivy image vulnerability scanner for HES project images."
+
+networks:
+  hes-internal:
+    external: true
+    name: ${HES_INTERNAL_NETWORK:-hes-production-internal}

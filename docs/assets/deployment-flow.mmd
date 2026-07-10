@@ -1,0 +1,23 @@
+%% Hermes Enterprise Stack (HES)
+%% File: docs/assets/deployment-flow.mmd
+%% Purpose: Mermaid diagram of the deployment workflow.
+%% Dark-theme compatible. Render with: mmdc -i deployment-flow.mmd -o deployment-flow.png
+
+flowchart TD
+    Dev["Developer"] --> Feature["feature/* branch"]
+    Feature -->|PR| Develop["develop branch"]
+    Develop -->|cut| Release["release/vX.Y.Z branch"]
+    Release -->|version bump| Prepare["Update VERSION · VERSION.md · CHANGELOG.md"]
+    Prepare -->|validate| Gate["Quality Gate<br/>make validate · CI green"]
+    Gate -->|PR to main| Main["main branch"]
+    Main -->|annotated tag| Tag["tag vX.Y.Z"]
+    Tag -->|push| GHR["GitHub Release"]
+    Main -->|back-merge| Develop
+
+    Main -->|urgent fix| Hotfix["hotfix/vX.Y.Z branch"]
+    Hotfix -->|patch bump| HPrepare["Update VERSION · VERSION.md · CHANGELOG.md"]
+    HPrepare -->|validate| HGate["Quality Gate · CI green"]
+    HGate -->|PR to main| Main
+
+    GHR -->|if pre-release| PreRel["pre-release identifier<br/>alpha · beta · rc"]
+    PreRel -->|promote| Main

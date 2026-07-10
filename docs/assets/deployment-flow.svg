@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Hermes Enterprise Stack (HES) -->
+<!-- File: docs/assets/deployment-flow.svg -->
+<!-- Purpose: Deployment workflow diagram. Dark-theme compatible. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 760" width="1120" height="760" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <title>Hermes Enterprise Stack — Deployment Flow</title>
+  <desc>Deployment workflow from feature branch through develop, release branch, quality gate, main, tag, GitHub Release, and back-merge. Includes hotfix and pre-release paths.</desc>
+
+  <rect width="1120" height="760" fill="#0d1117"/>
+
+  <text x="560" y="34" text-anchor="middle" font-size="20" font-weight="700" fill="#e6edf3">Hermes Enterprise Stack — Deployment Flow</text>
+
+  <defs>
+    <marker id="da" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b949e"/>
+    </marker>
+    <marker id="daG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/>
+    </marker>
+    <marker id="daB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+    </marker>
+    <marker id="daP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b5cf6"/>
+    </marker>
+  </defs>
+
+  <!-- ===== Standard Release Path ===== -->
+  <text x="40" y="66" font-size="13" font-weight="700" fill="#3b82f6" letter-spacing="1">STANDARD RELEASE PATH</text>
+
+  <rect x="40" y="80" width="160" height="50" rx="8" fill="#1e3a5f" stroke="#3b82f6"/>
+  <text x="120" y="102" text-anchor="middle" font-size="12" font-weight="600" fill="#93c5fd">feature/* branch</text>
+  <text x="120" y="118" text-anchor="middle" font-size="9" fill="#60a5fa">new work</text>
+  <line x1="120" y1="130" x2="120" y2="146" stroke="#8b949e" stroke-width="2" marker-end="url(#da)"/>
+
+  <rect x="40" y="146" width="160" height="50" rx="8" fill="#064e3b" stroke="#10b981"/>
+  <text x="120" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#6ee7b7">develop</text>
+  <text x="120" y="184" text-anchor="middle" font-size="9" fill="#34d399">integration branch</text>
+
+  <line x1="200" y1="171" x2="246" y2="171" stroke="#8b949e" stroke-width="2" marker-end="url(#da)"/>
+  <text x="223" y="164" text-anchor="middle" font-size="9" fill="#8b949e">cut</text>
+
+  <rect x="246" y="146" width="180" height="50" rx="8" fill="#2d2150" stroke="#8b5cf6"/>
+  <text x="336" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#c4b5fd">release/vX.Y.Z</text>
+  <text x="336" y="184" text-anchor="middle" font-size="9" fill="#a78bfa">version bump</text>
+  <line x1="336" y1="196" x2="336" y2="214" stroke="#8b949e" stroke-width="2" marker-end="url(#da)"/>
+
+  <rect x="246" y="214" width="180" height="50" rx="8" fill="#2d333b" stroke="#f59e0b"/>
+  <text x="336" y="236" text-anchor="middle" font-size="11" font-weight="600" fill="#fbbf24">VERSION · VERSION.md</text>
+  <text x="336" y="252" text-anchor="middle" font-size="10" fill="#fcd34d">CHANGELOG.md</text>
+  <line x1="336" y1="264" x2="336" y2="282" stroke="#8b949e" stroke-width="2" marker-end="url(#da)"/>
+
+  <rect x="246" y="282" width="180" height="58" rx="8" fill="#161b22" stroke="#10b981" stroke-width="1.5"/>
+  <text x="336" y="304" text-anchor="middle" font-size="12" font-weight="700" fill="#6ee7b7">Quality Gate</text>
+  <text x="336" y="320" text-anchor="middle" font-size="9" fill="#34d399">make validate · CI green</text>
+  <line x1="426" y1="311" x2="462" y2="311" stroke="#8b949e" stroke-width="2" marker-end="url(#da)"/>
+  <text x="444" y="304" text-anchor="middle" font-size="9" fill="#8b949e">PR</text>
+
+  <rect x="462" y="286" width="140" height="50" rx="8" fill="#1e3a5f" stroke="#3b82f6"/>
+  <text x="532" y="308" text-anchor="middle" font-size="12" font-weight="600" fill="#93c5fd">main</text>
+  <text x="532" y="324" text-anchor="middle" font-size="9" fill="#60a5fa">stable release</text>
+  <line x1="602" y1="311" x2="638" y2="311" stroke="#8b949e" stroke-width="2" marker-end="url(#da)"/>
+
+  <rect x="638" y="286" width="150" height="50" rx="8" fill="#2d2150" stroke="#8b5cf6"/>
+  <text x="713" y="308" text-anchor="middle" font-size="12" font-weight="600" fill="#c4b5fd">tag vX.Y.Z</text>
+  <text x="713" y="324" text-anchor="middle" font-size="9" fill="#a78bfa">annotated · push</text>
+  <line x1="788" y1="311" x2="824" y2="311" stroke="#8b949e" stroke-width="2" marker-end="url(#da)"/>
+
+  <rect x="824" y="286" width="170" height="50" rx="8" fill="#064e3b" stroke="#10b981"/>
+  <text x="909" y="308" text-anchor="middle" font-size="12" font-weight="600" fill="#6ee7b7">GitHub Release</text>
+  <text x="909" y="324" text-anchor="middle" font-size="9" fill="#34d399">notes from CHANGELOG</text>
+
+  <!-- back-merge to develop -->
+  <path d="M 532 336 Q 532 410 120 410 Q 120 420 120 196" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#da)"/>
+  <text x="320" y="402" text-anchor="middle" font-size="10" fill="#8b949e">back-merge main &#8594; develop</text>
+
+  <!-- ===== Hotfix Path ===== -->
+  <text x="40" y="466" font-size="13" font-weight="700" fill="#ef4444" letter-spacing="1">HOTFIX PATH</text>
+  <path d="M 532 336 Q 532 360 532 488" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#da)"/>
+  <text x="548" y="420" font-size="9" fill="#fca5a5">urgent fix</text>
+
+  <rect x="446" y="488" width="170" height="50" rx="8" fill="#4c0519" stroke="#ef4444"/>
+  <text x="531" y="510" text-anchor="middle" font-size="12" font-weight="600" fill="#fca5a5">hotfix/vX.Y.Z</text>
+  <text x="531" y="526" text-anchor="middle" font-size="9" fill="#f87171">patch bump · from main</text>
+  <line x1="531" y1="538" x2="531" y2="556" stroke="#8b949e" stroke-width="2" marker-end="url(#da)"/>
+
+  <rect x="446" y="556" width="170" height="50" rx="8" fill="#2d333b" stroke="#f59e0b"/>
+  <text x="531" y="578" text-anchor="middle" font-size="11" font-weight="600" fill="#fbbf24">VERSION · CHANGELOG</text>
+  <text x="531" y="594" text-anchor="middle" font-size="9" fill="#fcd34d">patch bump + Fixed</text>
+  <line x1="531" y1="606" x2="531" y2="624" stroke="#8b949e" stroke-width="2" marker-end="url(#da)"/>
+
+  <rect x="446" y="624" width="170" height="50" rx="8" fill="#161b22" stroke="#10b981" stroke-width="1.5"/>
+  <text x="531" y="646" text-anchor="middle" font-size="11" font-weight="700" fill="#6ee7b7">Quality Gate</text>
+  <text x="531" y="662" text-anchor="middle" font-size="9" fill="#34d399">CI green · PR to main</text>
+  <path d="M 531 674 Q 531 700 532 700 Q 532 350 532 336" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#da)"/>
+  <text x="566" y="700" font-size="9" fill="#fca5a5">&#8594; main &#8594; tag &#8594; release</text>
+
+  <!-- ===== Pre-release Path ===== -->
+  <text x="700" y="466" font-size="13" font-weight="700" fill="#8b5cf6" letter-spacing="1">PRE-RELEASE PATH</text>
+  <path d="M 638 311 Q 660 311 700 488" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#da)"/>
+  <text x="680" y="430" font-size="9" fill="#c4b5fd">if pre-release</text>
+
+  <rect x="700" y="488" width="170" height="44" rx="8" fill="#083344" stroke="#06b6d4"/>
+  <text x="785" y="506" text-anchor="middle" font-size="11" font-weight="600" fill="#67e8f9">vX.Y.Z-alpha.1</text>
+  <text x="785" y="522" text-anchor="middle" font-size="9" fill="#22d3ee">internal testing</text>
+
+  <rect x="700" y="548" width="170" height="44" rx="8" fill="#083344" stroke="#06b6d4"/>
+  <text x="785" y="566" text-anchor="middle" font-size="11" font-weight="600" fill="#67e8f9">vX.Y.Z-beta.1</text>
+  <text x="785" y="582" text-anchor="middle" font-size="9" fill="#22d3ee">feature-complete</text>
+
+  <rect x="700" y="608" width="170" height="44" rx="8" fill="#083344" stroke="#06b6d4"/>
+  <text x="785" y="626" text-anchor="middle" font-size="11" font-weight="600" fill="#67e8f9">vX.Y.Z-rc.1</text>
+  <text x="785" y="642" text-anchor="middle" font-size="9" fill="#22d3ee">release candidate</text>
+  <line x1="785" y1="652" x2="785" y2="670" stroke="#8b949e" stroke-width="2" marker-end="url(#da)"/>
+
+  <rect x="700" y="670" width="170" height="44" rx="8" fill="#064e3b" stroke="#10b981"/>
+  <text x="785" y="688" text-anchor="middle" font-size="11" font-weight="600" fill="#6ee7b7">vX.Y.Z (latest)</text>
+  <text x="785" y="704" text-anchor="middle" font-size="9" fill="#34d399">promote to final</text>
+
+  <path d="M 870 690 Q 920 690 909 336" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#daP)"/>
+  <text x="960" y="510" font-size="9" fill="#c4b5fd">GitHub</text>
+  <text x="960" y="524" font-size="9" fill="#c4b5fd">Release</text>
+  <text x="960" y="538" font-size="9" fill="#c4b5fd">(pre-release)</text>
+
+  <text x="560" y="744" text-anchor="middle" font-size="10" fill="#6e7681">All paths require the quality gate to pass before a tag is pushed. See docs/ReleaseStrategy.md and QUALITY_GATE.md.</text>
+</svg>

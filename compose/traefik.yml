@@ -6,6 +6,11 @@ name: ${HES_COMPOSE_PROJECT_NAME:-hes}
 
 services:
   traefik:
+    # Image is pinned to a fixed tag (never `latest`). To pin immutably by
+    # digest, set HES_TRAEFIK_IMAGE in .env, for example:
+    #   HES_TRAEFIK_IMAGE=traefik:v3.3@sha256:<digest>
+    # Resolve the digest with:
+    #   docker buildx imagetools inspect traefik:v3.3
     image: ${HES_TRAEFIK_IMAGE:-traefik:v3.3}
     restart: ${HES_RESTART_POLICY:-unless-stopped}
     read_only: true

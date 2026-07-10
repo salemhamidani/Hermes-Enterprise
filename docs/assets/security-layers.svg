@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Hermes Enterprise Stack (HES) -->
+<!-- File: docs/assets/security-layers.svg -->
+<!-- Purpose: Security layers diagram. Dark-theme compatible. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 720" width="1120" height="720" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <title>Hermes Enterprise Stack — Security Layers</title>
+  <desc>Six security layers from the internet boundary down to recovery: host firewall, ingress, network segmentation, API surface reduction, validation policy, and recovery boundary.</desc>
+
+  <rect width="1120" height="720" fill="#0d1117"/>
+
+  <text x="560" y="34" text-anchor="middle" font-size="20" font-weight="700" fill="#e6edf3">Hermes Enterprise Stack — Security Layers</text>
+
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b949e"/>
+    </marker>
+    <marker id="arr2c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4"/>
+    </marker>
+    <marker id="arr2r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"/>
+    </marker>
+  </defs>
+
+  <!-- Internet -->
+  <rect x="460" y="52" width="200" height="44" rx="22" fill="#1e3a5f" stroke="#3b82f6"/>
+  <text x="560" y="80" text-anchor="middle" font-size="13" font-weight="600" fill="#93c5fd">Internet</text>
+  <line x1="560" y1="96" x2="560" y2="112" stroke="#8b949e" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <!-- Layer 1: Host Boundary -->
+  <rect x="40" y="112" width="1040" height="70" rx="10" fill="#161b22" stroke="#3b82f6" stroke-width="1.5"/>
+  <rect x="48" y="120" width="120" height="54" rx="8" fill="#1e3a5f" stroke="#3b82f6"/>
+  <text x="108" y="142" text-anchor="middle" font-size="11" font-weight="700" fill="#93c5fd">LAYER 1</text>
+  <text x="108" y="160" text-anchor="middle" font-size="10" fill="#60a5fa">Host Boundary</text>
+  <text x="190" y="140" font-size="13" font-weight="600" fill="#e6edf3">Host Firewall / Port Policy</text>
+  <text x="190" y="162" font-size="11" fill="#8b949e">Only ports 80 and 443 exposed to the internet. All other ingress denied by default.</text>
+  <line x1="560" y1="182" x2="560" y2="198" stroke="#8b949e" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <!-- Layer 2: Ingress Boundary -->
+  <rect x="40" y="198" width="1040" height="70" rx="10" fill="#161b22" stroke="#10b981" stroke-width="1.5"/>
+  <rect x="48" y="206" width="120" height="54" rx="8" fill="#064e3b" stroke="#10b981"/>
+  <text x="108" y="228" text-anchor="middle" font-size="11" font-weight="700" fill="#6ee7b7">LAYER 2</text>
+  <text x="108" y="246" text-anchor="middle" font-size="10" fill="#34d399">Ingress Boundary</text>
+  <text x="190" y="226" font-size="13" font-weight="600" fill="#e6edf3">Traefik v3</text>
+  <text x="190" y="248" font-size="11" fill="#8b949e">HTTPS redirect · TLS termination · security headers middleware · dashboard disabled in Phase 1.</text>
+  <line x1="560" y1="268" x2="560" y2="284" stroke="#8b949e" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <!-- Layer 3: Network Segmentation -->
+  <rect x="40" y="284" width="1040" height="80" rx="10" fill="#161b22" stroke="#06b6d4" stroke-width="1.5"/>
+  <rect x="48" y="292" width="120" height="64" rx="8" fill="#083344" stroke="#06b6d4"/>
+  <text x="108" y="316" text-anchor="middle" font-size="11" font-weight="700" fill="#67e8f9">LAYER 3</text>
+  <text x="108" y="334" text-anchor="middle" font-size="10" fill="#22d3ee">Network</text>
+  <text x="108" y="348" text-anchor="middle" font-size="10" fill="#22d3ee">Segmentation</text>
+  <rect x="190" y="294" width="400" height="58" rx="8" fill="#083344" stroke="#06b6d4"/>
+  <text x="390" y="316" text-anchor="middle" font-size="12" font-weight="600" fill="#67e8f9">hes-public</text>
+  <text x="390" y="336" text-anchor="middle" font-size="10" fill="#a5f3fc">bridge · attachable · ingress-facing</text>
+  <rect x="620" y="294" width="440" height="58" rx="8" fill="#3b1d1d" stroke="#ef4444"/>
+  <text x="840" y="316" text-anchor="middle" font-size="12" font-weight="600" fill="#fca5a5">hes-internal</text>
+  <text x="840" y="336" text-anchor="middle" font-size="10" fill="#fecaca">bridge · internal:true · NOT attachable · private east-west traffic</text>
+  <line x1="560" y1="364" x2="560" y2="380" stroke="#8b949e" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <!-- Layer 4: API Surface Reduction -->
+  <rect x="40" y="380" width="1040" height="80" rx="10" fill="#161b22" stroke="#ef4444" stroke-width="1.5"/>
+  <rect x="48" y="388" width="120" height="64" rx="8" fill="#4c0519" stroke="#ef4444"/>
+  <text x="108" y="412" text-anchor="middle" font-size="11" font-weight="700" fill="#fca5a5">LAYER 4</text>
+  <text x="108" y="430" text-anchor="middle" font-size="10" fill="#f87171">API Surface</text>
+  <text x="108" y="444" text-anchor="middle" font-size="10" fill="#f87171">Reduction</text>
+  <rect x="190" y="388" width="420" height="58" rx="8" fill="#4c0519" stroke="#ef4444"/>
+  <text x="400" y="410" text-anchor="middle" font-size="12" font-weight="600" fill="#fca5a5">Docker Socket Proxy</text>
+  <text x="400" y="430" text-anchor="middle" font-size="10" fill="#fecaca">tecnativa/docker-socket-proxy · reduced permissions · no raw socket mount</text>
+  <rect x="640" y="388" width="420" height="58" rx="8" fill="#3b1d1d" stroke="#ef4444" stroke-dasharray="5 3"/>
+  <text x="850" y="410" text-anchor="middle" font-size="12" font-weight="600" fill="#fca5a5">Read-Limited Docker API</text>
+  <text x="850" y="430" text-anchor="middle" font-size="10" fill="#fecaca">metadata only · discovery for Traefik</text>
+  <line x1="610" y1="417" x2="638" y2="417" stroke="#ef4444" stroke-width="2" marker-end="url(#arr2r)"/>
+  <line x1="560" y1="460" x2="560" y2="476" stroke="#8b949e" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <!-- Layer 5: Validation & Policy -->
+  <rect x="40" y="476" width="1040" height="80" rx="10" fill="#161b22" stroke="#f59e0b" stroke-width="1.5"/>
+  <rect x="48" y="484" width="120" height="64" rx="8" fill="#2d2150" stroke="#f59e0b"/>
+  <text x="108" y="508" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">LAYER 5</text>
+  <text x="108" y="526" text-anchor="middle" font-size="10" fill="#f59e0b">Validation</text>
+  <text x="108" y="540" text-anchor="middle" font-size="10" fill="#f59e0b">&amp; Policy</text>
+  <text x="190" y="502" font-size="13" font-weight="600" fill="#e6edf3">make validate</text>
+  <text x="190" y="524" font-size="11" fill="#8b949e">no container_name · no latest tags · no deprecated version key</text>
+  <text x="190" y="542" font-size="11" fill="#8b949e">healthchecks · log rotation · com.hermes.* labels · env validation</text>
+  <line x1="560" y1="556" x2="560" y2="572" stroke="#8b949e" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <!-- Layer 6: Recovery Boundary -->
+  <rect x="40" y="572" width="1040" height="80" rx="10" fill="#161b22" stroke="#8b5cf6" stroke-width="1.5"/>
+  <rect x="48" y="580" width="120" height="64" rx="8" fill="#2d2150" stroke="#8b5cf6"/>
+  <text x="108" y="604" text-anchor="middle" font-size="11" font-weight="700" fill="#c4b5fd">LAYER 6</text>
+  <text x="108" y="622" text-anchor="middle" font-size="10" fill="#a78bfa">Recovery</text>
+  <text x="108" y="636" text-anchor="middle" font-size="10" fill="#a78bfa">Boundary</text>
+  <rect x="190" y="582" width="420" height="58" rx="8" fill="#2d2150" stroke="#8b5cf6"/>
+  <text x="400" y="604" text-anchor="middle" font-size="12" font-weight="600" fill="#c4b5fd">make backup</text>
+  <text x="400" y="624" text-anchor="middle" font-size="10" fill="#a78bfa">chmod 600 archives · timestamped · retention pruning</text>
+  <rect x="640" y="582" width="420" height="58" rx="8" fill="#2d2150" stroke="#8b5cf6"/>
+  <text x="850" y="604" text-anchor="middle" font-size="12" font-weight="600" fill="#c4b5fd">make restore</text>
+  <text x="850" y="624" text-anchor="middle" font-size="10" fill="#a78bfa">staged extraction · path validation · unsafe entries rejected</text>
+
+  <!-- Side notes: cross-cutting guards -->
+  <path d="M 250 512 Q 300 440 300 420" fill="none" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr2c)"/>
+  <text x="266" y="470" font-size="9" fill="#fbbf24" transform="rotate(-90 266 470)">guards ingress</text>
+  <path d="M 870 512 Q 820 460 820 440" fill="none" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr2c)"/>
+  <text x="884" y="470" font-size="9" fill="#fbbf24" transform="rotate(-90 884 470)">guards proxy</text>
+
+  <!-- footer -->
+  <text x="560" y="688" text-anchor="middle" font-size="10" fill="#6e7681">Defense in depth: deny by default, allow by exception. Each layer reduces the exposed surface for the next.</text>
+</svg>

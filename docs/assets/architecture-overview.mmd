@@ -1,0 +1,70 @@
+%% Hermes Enterprise Stack (HES)
+%% File: docs/assets/architecture-overview.mmd
+%% Purpose: Mermaid diagram of the full Phase 1 infrastructure architecture.
+%% Dark-theme compatible. Render with: mmdc -i architecture-overview.mmd -o architecture-overview.png
+
+flowchart TD
+    subgraph Operator["Operator Layer"]
+        Op["Operator"]
+        Make["Makefile"]
+        Scripts["Bash Lifecycle Scripts<br/>install · validate · doctor · repair ·<br/>update · backup · restore · uninstall"]
+    end
+
+    subgraph Compose["Docker Compose V2"]
+        ComposeEntry["compose.yml"]
+        NetworkMod["network.yml"]
+        SecurityMod["security.yml"]
+        TraefikMod["traefik.yml"]
+    end
+
+    subgraph Runtime["Infrastructure Runtime"]
+        Traefik["Traefik v3<br/>HTTP 80 · HTTPS 443"]
+        SocketProxy["Docker Socket Proxy<br/>tecnativa/docker-socket-proxy"]
+        DockerAPI["Docker API<br/>read-only"]
+        PublicNet["hes-public<br/>bridge · attachable"]
+        InternalNet["hes-internal<br/>bridge · internal"]
+    end
+
+    subgraph Future["Future Hermes Services"]
+        FutureAPI["hermes-api.yml"]
+        FutureWorker["hermes-worker.yml"]
+        FutureObs["observability.yml"]
+    end
+
+    subgraph State["Runtime State"]
+        Logs["logs/"]
+        Backup["backup/"]
+        SSL["ssl/"]
+        Storage["storage/"]
+        Data["data/"]
+    end
+
+    Op --> Make
+    Make --> Scripts
+    Scripts --> ComposeEntry
+    ComposeEntry --> NetworkMod
+    ComposeEntry --> SecurityMod
+    ComposeEntry --> TraefikMod
+
+    TraefikMod --> Traefik
+    SecurityMod --> SocketProxy
+    SocketProxy --> DockerAPI
+
+    Traefik --- PublicNet
+    Traefik --- InternalNet
+    SocketProxy --- InternalNet
+    SocketProxy -. read-only .-> DockerAPI
+
+    DockerAPI -. discovery .-> Traefik
+
+    FutureAPI -.-> PublicNet
+    FutureWorker -.-> InternalNet
+    FutureObs -.-> InternalNet
+
+    Traefik --> Logs
+    SocketProxy --> Logs
+    Scripts --> Logs
+    Scripts --> Backup
+    Traefik --> SSL
+    Scripts --> Storage
+    Scripts --> Data

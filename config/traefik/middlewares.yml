@@ -1,0 +1,22 @@
+# Hermes Enterprise Stack (HES)
+# File: config/traefik/middlewares.yml
+# Purpose: Placeholder for reusable Traefik HTTP middleware definitions.
+#
+# Future middlewares (rate limiting, authentication, buffering, retry, etc.)
+# will be declared here. Everything below is commented out so no middleware is
+# enabled by default. See config/traefik/headers.yml for security headers and
+# config/traefik/dynamic/security-headers.yml for the active Phase 1 headers.
+
+# http:
+#   middlewares:
+#     rate-limit:
+#       rateLimit:
+#         average: 100
+#         burst: 50
+#     basic-auth:
+#       basicAuth:
+#         users: []
+#     retry:
+#       retries: 3
+#     buffering:
+#       bufferingMemory: 5242880

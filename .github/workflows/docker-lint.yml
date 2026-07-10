@@ -1,0 +1,99 @@
+# Hermes Enterprise Stack (HES)
+# File: .github/workflows/docker-lint.yml
+# Purpose: Lint Dockerfiles with Hadolint and validate Docker Compose configuration.
+
+name: Docker Lint
+
+"on":
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - "compose/**"
+      - "**/Dockerfile"
+      - "**/Dockerfile.*"
+      - ".github/workflows/docker-lint.yml"
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "compose/**"
+      - "**/Dockerfile"
+      - "**/Dockerfile.*"
+
+jobs:
+  docker-lint:
+    name: Dockerfile & Compose Lint
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Hadolint
+        run: |
+          sudo curl -L -o /usr/local/bin/hadolint \
+            https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
+          sudo chmod +x /usr/local/bin/hadolint
+
+      - name: Lint Dockerfiles with Hadolint
+        run: |
+          mapfile -t dockerfiles < <(find . -type f \( -name 'Dockerfile' -o -name 'Dockerfile.*' \) -not -path './.git/*')
+          if [ "${#dockerfiles[@]}" -gt 0 ]; then
+            hadolint "${dockerfiles[@]}"
+          else
+            echo "No Dockerfiles found; skipping Hadolint."
+          fi
+
+      - name: Prepare env
+        run: cp .env.example .env
+
+      - name: Validate Compose config
+        run: |
+          docker compose \
+            --project-directory . \
+            --env-file .env \
+            -f compose/compose.yml \
+            config >/dev/null
+
+      - name: Check for deprecated version key
+        run: |
+          if find compose/ -type f -name '*.yml' -exec grep -H "^version:" {} +; then
+            echo "::error::Deprecated Compose version keys are not allowed"
+            exit 1
+          fi
+
+      - name: Check for container_name
+        run: |
+          if find compose/ -type f -name '*.yml' -exec grep -H "container_name:" {} +; then
+            echo "::error::Fixed container_name values are not allowed"
+            exit 1
+          fi
+
+      - name: Check for latest tags
+        run: |
+          if find compose/ -type f -name '*.yml' -exec grep -H "image: .*:latest" {} +; then
+            echo "::error::Floating latest image tags are not allowed"
+            exit 1
+          fi
+
+      - name: Check for healthchecks
+        run: |
+          for file in compose/*.yml; do
+            [ -f "$file" ] || continue
+            if ! grep -q "healthcheck:" "$file"; then
+              echo "::warning::Missing healthcheck in $file"
+            fi
+          done
+
+      - name: Check for log rotation
+        run: |
+          for file in compose/*.yml; do
+            [ -f "$file" ] || continue
+            if ! grep -q "max-size" "$file"; then
+              echo "::warning::Missing log rotation in $file"
+            fi
+          done

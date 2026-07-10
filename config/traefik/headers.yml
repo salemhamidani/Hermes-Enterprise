@@ -1,0 +1,18 @@
+# Hermes Enterprise Stack (HES)
+# File: config/traefik/headers.yml
+# Purpose: Placeholder for additional security header middleware definitions.
+#
+# The active Phase 1 security headers live in
+# config/traefik/dynamic/security-headers.yml and must not be modified by this
+# task. This file reserves space for future header middleware variants (e.g.
+# per-service CORS or Content-Security-Policy). Everything below is commented
+# out so no middleware is enabled by default.
+
+# http:
+#   middlewares:
+#     hes-extra-headers:
+#       headers:
+#         contentSecurityPolicy: "default-src 'self'"
+#         permissionsPolicy: "geolocation=(), microphone=()"
+#         customResponseHeaders:
+#           X-Robots-Tag: "noindex"

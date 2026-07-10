@@ -1,0 +1,30 @@
+# Hermes Enterprise Stack (HES)
+# File: .github/dependabot.yml
+# Purpose: Configure Dependabot for github-actions and docker ecosystem updates.
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "ci(deps)"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "docker(deps)"

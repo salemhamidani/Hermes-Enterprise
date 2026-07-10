@@ -6,6 +6,11 @@ name: ${HES_COMPOSE_PROJECT_NAME:-hes}
 
 services:
   docker-socket-proxy:
+    # Image is pinned to a fixed tag (never `latest`). To pin immutably by
+    # digest, set HES_SOCKET_PROXY_IMAGE in .env, for example:
+    #   HES_SOCKET_PROXY_IMAGE=tecnativa/docker-socket-proxy:0.3.0@sha256:<digest>
+    # Resolve the digest with:
+    #   docker buildx imagetools inspect tecnativa/docker-socket-proxy:0.3.0
     image: ${HES_SOCKET_PROXY_IMAGE:-tecnativa/docker-socket-proxy:0.3.0}
     restart: ${HES_RESTART_POLICY:-unless-stopped}
     read_only: true

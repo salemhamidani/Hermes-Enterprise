@@ -1,6 +1,24 @@
 # Hermes Enterprise Stack (HES)
 # File: compose/compose.yml
 # Purpose: Orchestrate Phase 1 infrastructure modules with Docker Compose V2.
+#
+# NOTE: This file is documentation-oriented and retained for backward
+# compatibility. The preferred entrypoint is scripts/compose-up.sh, which
+# discovers and loads every compose/*.yml module in the correct order without
+# relying on the Compose `include` directive (not supported by all Docker
+# Compose versions). The `include` block below remains so older workflows that
+# invoke `docker compose -f compose/compose.yml` directly continue to work.
+#
+# Entry points (preferred):
+#   scripts/compose-up.sh        Start the stack (replaces `include`-based up)
+#   scripts/compose-down.sh      Stop and remove the stack
+#   scripts/compose-validate.sh  Validate the merged Compose configuration
+#
+# Module load order (enforced by the launcher scripts):
+#   1. compose/network.yml
+#   2. compose/security.yml
+#   3. compose/traefik.yml
+#   4. any future modules, alphabetically
 
 name: ${HES_COMPOSE_PROJECT_NAME:-hes}
 

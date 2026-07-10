@@ -1,0 +1,15 @@
+# Hermes Enterprise Stack (HES)
+# File: config/traefik/certificates.yml
+# Purpose: Placeholder for explicit certificate configuration.
+#
+# Phase 1 relies on Traefik ACME (Let's Encrypt) configured via CLI flags in
+# compose/traefik.yml. This file reserves space for future explicit/static
+# certificate declarations (e.g. wildcard or self-signed certs). Everything
+# below is commented out so no certificate is loaded by default.
+
+# tls:
+#   certificates:
+#     - certFile: /path/to/fullchain.pem
+#       keyFile: /path/to/privkey.pem
+#       stores:
+#         - default

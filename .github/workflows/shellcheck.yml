@@ -34,9 +34,11 @@ jobs:
 
       - name: Run ShellCheck
         run: |
+          shopt -s nullglob
           shellcheck \
             scripts/*.sh \
-            scripts/lib/*.sh
+            scripts/lib/*.sh \
+            scripts/install/*.sh
 
       - name: Check line endings (reject CRLF)
         run: |
@@ -47,7 +49,8 @@ jobs:
 
       - name: Check shebang lines
         run: |
-          for script in scripts/*.sh scripts/lib/*.sh; do
+          shopt -s nullglob
+          for script in scripts/*.sh scripts/lib/*.sh scripts/install/*.sh; do
             if ! head -1 "$script" | grep -q '^#!/usr/bin/env bash'; then
               echo "::error::Missing or invalid shebang in $script"
               exit 1

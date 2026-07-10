@@ -1,0 +1,33 @@
+%% Hermes Enterprise Stack (HES)
+%% File: docs/assets/network-topology.mmd
+%% Purpose: Mermaid diagram of network segmentation.
+%% Dark-theme compatible. Render with: mmdc -i network-topology.mmd -o network-topology.png
+
+flowchart LR
+    Internet["Internet / Clients"]
+
+    subgraph PublicZone["Public Ingress Zone"]
+        PublicNet["hes-public<br/>bridge · attachable<br/>NOT internal"]
+        Traefik["Traefik v3<br/>port 80 · port 443"]
+    end
+
+    subgraph InternalZone["Internal-Only Zone"]
+        InternalNet["hes-internal<br/>bridge · internal:true<br/>NOT attachable"]
+        SocketProxy["Docker Socket Proxy"]
+        DockerAPI["Docker API<br/>read-only"]
+    end
+
+    subgraph Future["Future Services"]
+        PublicSvc["Public-facing<br/>Service"]
+        PrivateSvc["Internal-only<br/>Service"]
+    end
+
+    Internet -->|HTTP/HTTPS| Traefik
+    Traefik --- PublicNet
+    Traefik ---|discovery via proxy| InternalNet
+    SocketProxy --- InternalNet
+    SocketProxy -->|read-only| DockerAPI
+    DockerAPI -.->|metadata| Traefik
+
+    PublicSvc -.->|attach| PublicNet
+    PrivateSvc -.->|east-west traffic| InternalNet

@@ -4,10 +4,10 @@
 
 SHELL := /bin/bash
 
-.PHONY: install doctor validate repair update backup restore logs status clean uninstall
+.PHONY: install doctor validate repair update backup restore logs status clean uninstall security-scan compose-validate
 
 install:
-	./scripts/install.sh
+	./scripts/compose-up.sh
 
 doctor:
 	./scripts/doctor.sh
@@ -28,13 +28,19 @@ restore:
 	./scripts/restore.sh
 
 logs:
-	docker compose --project-directory . --env-file .env -f compose/compose.yml logs --tail=200 -f
+	./scripts/compose-up.sh -- logs --tail=200 -f
 
 status:
-	docker compose --project-directory . --env-file .env -f compose/compose.yml ps
+	./scripts/compose-up.sh -- ps
 
 clean:
-	docker compose --project-directory . --env-file .env -f compose/compose.yml down --remove-orphans
+	./scripts/compose-down.sh
 
 uninstall:
 	./scripts/uninstall.sh
+
+security-scan:
+	./scripts/security-scan.sh
+
+compose-validate:
+	./scripts/compose-validate.sh
