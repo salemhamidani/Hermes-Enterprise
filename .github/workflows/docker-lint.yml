@@ -43,7 +43,7 @@ jobs:
         run: |
           mapfile -t dockerfiles < <(find . -type f \( -name 'Dockerfile' -o -name 'Dockerfile.*' \) -not -path './.git/*')
           if [ "${#dockerfiles[@]}" -gt 0 ]; then
-            hadolint "${dockerfiles[@]}"
+            hadolint --config .hadolint.yaml "${dockerfiles[@]}"
           else
             echo "No Dockerfiles found; skipping Hadolint."
           fi
@@ -53,11 +53,8 @@ jobs:
 
       - name: Validate Compose config
         run: |
-          docker compose \
-            --project-directory . \
-            --env-file .env \
-            -f compose/compose.yml \
-            config >/dev/null
+          chmod +x scripts/*.sh scripts/lib/*.sh scripts/install/*.sh
+          scripts/compose-validate.sh
 
       - name: Check for deprecated version key
         run: |

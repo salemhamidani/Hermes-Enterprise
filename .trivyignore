@@ -1,0 +1,3 @@
+# Hermes Enterprise Stack (HES)
+# File: .trivyignore
+# Purpose: Approved Trivy suppressions. Keep empty unless a finding is reviewed and accepted.

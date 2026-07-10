@@ -1,0 +1,9 @@
+# Hermes Enterprise Stack (HES)
+# File: .hadolint.yaml
+# Purpose: Shared Hadolint configuration for Dockerfile linting.
+
+failure-threshold: error
+ignored: []
+trustedRegistries:
+  - docker.io
+  - ghcr.io

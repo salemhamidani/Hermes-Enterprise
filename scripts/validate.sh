@@ -200,7 +200,7 @@ main() {
   fi
 
   check_docker_compose
-  compose config >/dev/null
+  "${SCRIPT_DIR}/compose-validate.sh" >/dev/null
   log_success "Docker Compose configuration is valid."
   log_success "Validation completed."
 }
