@@ -37,7 +37,9 @@ jobs:
       - name: Lint YAML files
         run: |
           yamllint \
-            -d "{extends: default, rules: {line-length: {max: 200}, document-start: disable, new-line-at-end-of-file: require}}" \
+            -c .yamllint.yml \
+            .yamllint.yml \
+            .github/dependabot.yml \
             compose/ \
             config/ \
             .github/workflows/

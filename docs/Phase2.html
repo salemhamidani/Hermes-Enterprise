@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hermes Enterprise Stack - Sprint 2 Security Foundation</title>
+  <style>
+    :root { color-scheme: dark; --bg: #101418; --panel: #171d23; --panel-2: #202832; --text: #eef3f8; --muted: #9fb0c0; --line: #32404d; --accent: #58c7a6; --warn: #f3bc5f; --danger: #ef7777; }
+    [data-theme="light"] { color-scheme: light; --bg: #f6f8fb; --panel: #ffffff; --panel-2: #eef3f7; --text: #14202b; --muted: #526576; --line: #d4dee8; --accent: #087f68; --warn: #a76500; --danger: #b3261e; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+    a { color: var(--accent); text-decoration: none; }
+    .shell { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+    aside { position: sticky; top: 0; height: 100vh; overflow: auto; border-right: 1px solid var(--line); background: var(--panel); padding: 20px; }
+    main { padding: 32px; max-width: 1180px; width: 100%; }
+    h1 { font-size: 34px; line-height: 1.1; margin: 0 0 12px; }
+    h2 { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--line); }
+    h3 { margin-top: 28px; }
+    p, li { color: var(--muted); line-height: 1.65; }
+    .brand { font-weight: 800; color: var(--text); margin-bottom: 16px; }
+    .toolbar { display: flex; gap: 10px; align-items: center; margin: 18px 0; }
+    input[type="search"] { width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--text); padding: 10px 12px; }
+    button { border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); color: var(--text); padding: 9px 12px; cursor: pointer; }
+    nav a { display: block; padding: 8px 0; color: var(--muted); }
+    nav a:hover { color: var(--text); }
+    .hero { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 18px 0; }
+    .card { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 16px; }
+    .card strong { display: block; margin-bottom: 8px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { border: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
+    th { background: var(--panel-2); }
+    td { color: var(--muted); }
+    pre { position: relative; background: #0b0f13; color: #ecf3f9; border: 1px solid var(--line); border-radius: 8px; padding: 16px; overflow: auto; }
+    [data-theme="light"] pre { background: #17202a; }
+    .copy { position: absolute; top: 8px; right: 8px; font-size: 12px; }
+    .status { display: inline-block; border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; color: var(--accent); }
+    .warn { color: var(--warn); }
+    .danger { color: var(--danger); }
+    .mermaid { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 16px 0; }
+    .hidden { display: none !important; }
+    @media (max-width: 900px) { .shell { grid-template-columns: 1fr; } aside { position: relative; height: auto; } main { padding: 20px; } .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="brand">Hermes Enterprise Stack</div>
+      <input id="search" type="search" placeholder="Search documentation">
+      <div class="toolbar"><button id="theme">Toggle Theme</button></div>
+      <nav id="nav">
+        <a href="#overview">Overview</a>
+        <a href="#network">Network</a>
+        <a href="#traefik">Traefik</a>
+        <a href="#security">Security</a>
+        <a href="#tls">TLS</a>
+        <a href="#logging">Logging</a>
+        <a href="#validation">Validation</a>
+        <a href="#troubleshooting">Troubleshooting</a>
+      </nav>
+    </aside>
+    <main>
+      <section id="overview" class="hero searchable">
+        <span class="status">Sprint 2 - Version 1.1.0</span>
+        <h1>Security Foundation</h1>
+        <p>Production security foundation for HES infrastructure only. No Hermes Agent, Dashboard, WebUI, monitoring stack, database, or application route is implemented in this sprint.</p>
+        <div class="grid">
+          <div class="card"><strong>Infrastructure Only</strong><p>Network, Traefik, TLS, logs, secrets preparation, validation, and repair.</p></div>
+          <div class="card"><strong>Production Traefik</strong><p>HTTPS, ACME HTTP challenge, security middleware, structured logs, ping, and metrics preparation.</p></div>
+          <div class="card"><strong>Defense in Depth</strong><p>Network segmentation, socket proxy isolation, container hardening, and safe secret handling.</p></div>
+        </div>
+      </section>
+
+      <section id="network" class="searchable">
+        <h2>Network Design</h2>
+        <div class="mermaid">
+flowchart LR
+  Internet[Internet] --> Traefik[Traefik]
+  Traefik --> Frontend[hes-frontend]
+  Traefik --> Management[hes-management]
+  Proxy[Docker Socket Proxy] --> Management
+  Backend[hes-backend] -. reserved .-> Future[Future Hermes Services]
+  Internal[hes-internal] -. reserved .-> Infra[Future Infrastructure]
+        </div>
+        <table><thead><tr><th>Network</th><th>Variable</th><th>Purpose</th></tr></thead><tbody>
+          <tr><td>hes-frontend</td><td>HES_FRONTEND_NETWORK</td><td>Public ingress network for Traefik.</td></tr>
+          <tr><td>hes-backend</td><td>HES_BACKEND_NETWORK</td><td>Future private service traffic.</td></tr>
+          <tr><td>hes-management</td><td>HES_MANAGEMENT_NETWORK</td><td>Traefik to Docker socket proxy.</td></tr>
+          <tr><td>hes-internal</td><td>HES_INTERNAL_NETWORK</td><td>Reserved internal infrastructure traffic.</td></tr>
+        </tbody></table>
+      </section>
+
+      <section id="traefik" class="searchable">
+        <h2>Traefik Foundation</h2>
+        <p>Traefik is configured through `compose/traefik.yml` with production flags. Reference static config lives under `config/traefik/` for future migration.</p>
+        <pre><button class="copy">Copy</button><code>make repair
+make validate
+make install
+make status</code></pre>
+      </section>
+
+      <section id="security" class="searchable">
+        <h2>Security Middleware</h2>
+        <table><thead><tr><th>Middleware</th><th>Control</th></tr></thead><tbody>
+          <tr><td>hes-security-headers</td><td>HSTS, CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy, no-sniff.</td></tr>
+          <tr><td>hes-rate-limit</td><td>Reusable request rate limiting for future routers.</td></tr>
+          <tr><td>hes-compress</td><td>Gzip and Brotli-capable compression where supported.</td></tr>
+          <tr><td>hes-secure-chain</td><td>Composable middleware chain for future public services.</td></tr>
+        </tbody></table>
+      </section>
+
+      <section id="tls" class="searchable">
+        <h2>TLS and ACME</h2>
+        <p>Let's Encrypt HTTP challenge is configured through Traefik. Use the staging CA before production exposure to avoid rate limits.</p>
+        <pre><button class="copy">Copy</button><code>HES_TRAEFIK_ACME_CA_SERVER=https://acme-staging-v02.api.letsencrypt.org/directory</code></pre>
+      </section>
+
+      <section id="logging" class="searchable">
+        <h2>Logging</h2>
+        <table><thead><tr><th>Path</th><th>Purpose</th></tr></thead><tbody>
+          <tr><td>logs/traefik/access</td><td>Structured access logs.</td></tr>
+          <tr><td>logs/traefik/application</td><td>Traefik application logs.</td></tr>
+          <tr><td>logs/traefik/security</td><td>Reserved security event logs.</td></tr>
+          <tr><td>logs/scripts</td><td>Lifecycle script logs.</td></tr>
+        </tbody></table>
+      </section>
+
+      <section id="validation" class="searchable">
+        <h2>Validation</h2>
+        <pre><button class="copy">Copy</button><code>make repair
+make validate
+scripts/compose-validate.sh</code></pre>
+        <p>Validation checks Traefik config files, certificate state, Docker networks, permissions, Compose syntax, shell scripts, and YAML syntax.</p>
+      </section>
+
+      <section id="troubleshooting" class="searchable">
+        <h2>Troubleshooting</h2>
+        <table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody>
+          <tr><td>ACME fails</td><td>Confirm DNS, port 80 reachability, and use staging CA first.</td></tr>
+          <tr><td>Permission error on ACME</td><td>Run `make repair` to restore `ssl/letsencrypt/acme.json` permissions.</td></tr>
+          <tr><td>Compose network failure</td><td>Check `HES_*_NETWORK` variables and run `make validate`.</td></tr>
+          <tr><td>No route published</td><td>Expected in Sprint 2; Hermes routing is out of scope.</td></tr>
+        </tbody></table>
+      </section>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    const root = document.documentElement;
+    const stored = localStorage.getItem('hes-theme');
+    if (stored) root.dataset.theme = stored;
+    document.getElementById('theme').addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'light' ? '' : 'light';
+      localStorage.setItem('hes-theme', root.dataset.theme || 'dark');
+    });
+    document.querySelectorAll('pre').forEach((block) => {
+      const button = block.querySelector('.copy');
+      button.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(block.innerText.replace('Copy', '').trim());
+        button.textContent = 'Copied';
+        setTimeout(() => button.textContent = 'Copy', 1200);
+      });
+    });
+    document.getElementById('search').addEventListener('input', (event) => {
+      const query = event.target.value.toLowerCase();
+      document.querySelectorAll('.searchable').forEach((section) => {
+        section.classList.toggle('hidden', query && !section.innerText.toLowerCase().includes(query));
+      });
+    });
+    if (window.mermaid) mermaid.initialize({ startOnLoad: true, theme: root.dataset.theme === 'light' ? 'default' : 'dark' });
+  </script>
+</body>
+</html>

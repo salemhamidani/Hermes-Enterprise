@@ -24,7 +24,21 @@ repair_permissions() {
   le_dir="${ssl_dir}/letsencrypt"
   [[ -d "${ssl_dir}" ]] && chmod 700 "${ssl_dir}"
   [[ -d "${le_dir}" ]] && chmod 700 "${le_dir}"
+  if [[ -d "${le_dir}" && ! -f "${le_dir}/acme.json" ]]; then
+    : > "${le_dir}/acme.json"
+  fi
+  [[ -f "${le_dir}/acme.json" ]] && chmod 600 "${le_dir}/acme.json"
   log_success "Directory permissions repaired."
+}
+
+repair_traefik_directories() {
+  mkdir -p \
+    "$(runtime_path HES_LOG_DIR ./logs)/traefik/access" \
+    "$(runtime_path HES_LOG_DIR ./logs)/traefik/application" \
+    "$(runtime_path HES_LOG_DIR ./logs)/traefik/security" \
+    "${HES_PROJECT_ROOT}/secrets"
+  touch "${HES_PROJECT_ROOT}/secrets/.gitkeep"
+  log_success "Traefik log and secrets directories repaired."
 }
 
 repair_version_file() {
@@ -80,6 +94,7 @@ main() {
   ensure_env_file
   load_env
   ensure_directories
+  repair_traefik_directories
   repair_permissions
   repair_version_file
   repair_shellcheckrc

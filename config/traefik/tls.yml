@@ -1,24 +1,18 @@
 # Hermes Enterprise Stack (HES)
 # File: config/traefik/tls.yml
-# Purpose: Placeholder for TLS options and cipher suite configuration.
-#
-# Future TLS hardening (minimum versions, cipher suites, SNI strictness) will
-# be declared here. The active Phase 1 TLS defaults live in
-# config/traefik/dynamic/security-headers.yml. Everything below is commented
-# out so no TLS option is enabled by default.
+# Purpose: Reference Traefik TLS policy for Sprint 2 security foundation.
 
-# tls:
-#   options:
-#     default:
-#       minVersion: VersionTLS12
-#       maxVersion: VersionTLS13
-#       sniStrict: true
-#       cipherSuites:
-#         - TLS_AES_128_GCM_SHA256
-#         - TLS_AES_256_GCM_SHA384
-#         - TLS_CHACHA20_POLY1305_SHA256
-#   stores:
-#     default:
-#       defaultCertificate:
-#         certFile: /path/to/cert.pem
-#         keyFile: /path/to/key.pem
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      sniStrict: true
+      cipherSuites:
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    modern:
+      minVersion: VersionTLS13
+      sniStrict: true
+  stores:
+    default: {}

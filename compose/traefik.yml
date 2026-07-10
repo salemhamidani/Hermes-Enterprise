@@ -1,16 +1,11 @@
 # Hermes Enterprise Stack (HES)
 # File: compose/traefik.yml
-# Purpose: Define the Phase 1 Traefik ingress infrastructure.
+# Purpose: Define production Traefik ingress infrastructure for Sprint 2 security foundation.
 
 name: ${HES_COMPOSE_PROJECT_NAME:-hes}
 
 services:
   traefik:
-    # Image is pinned to a fixed tag (never `latest`). To pin immutably by
-    # digest, set HES_TRAEFIK_IMAGE in .env, for example:
-    #   HES_TRAEFIK_IMAGE=traefik:v3.3@sha256:<digest>
-    # Resolve the digest with:
-    #   docker buildx imagetools inspect traefik:v3.3
     image: ${HES_TRAEFIK_IMAGE:-traefik:v3.3}
     restart: ${HES_RESTART_POLICY:-unless-stopped}
     read_only: true
@@ -27,24 +22,35 @@ services:
     command:
       - --global.checknewversion=false
       - --global.sendanonymoususage=false
-      - --ping=true
       - --api.dashboard=false
+      - --ping=true
+      - --ping.entrypoint=${HES_TRAEFIK_PING_ENTRYPOINT:-traefik}
       - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls=true
+      - --entrypoints.websecure.http.tls.certresolver=${HES_TRAEFIK_CERT_RESOLVER:-letsencrypt}
+      - --entrypoints.traefik.address=:8080
+      - --entrypoints.metrics.address=:9100
       - --providers.docker=true
       - --providers.docker.endpoint=${HES_TRAEFIK_DOCKER_ENDPOINT:-tcp://docker-socket-proxy:2375}
       - --providers.docker.exposedbydefault=false
-      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.filename=/etc/traefik/dynamic.yml
       - --providers.file.watch=true
-      - --certificatesresolvers.default.acme.email=${HES_ADMIN_EMAIL:-admin@example.com}
-      - --certificatesresolvers.default.acme.storage=${HES_TRAEFIK_ACME_STORAGE:-/letsencrypt/acme.json}
-      - --certificatesresolvers.default.acme.httpchallenge=true
-      - --certificatesresolvers.default.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.${HES_TRAEFIK_CERT_RESOLVER:-letsencrypt}.acme.email=${HES_ADMIN_EMAIL:-admin@example.com}
+      - --certificatesresolvers.${HES_TRAEFIK_CERT_RESOLVER:-letsencrypt}.acme.storage=${HES_TRAEFIK_ACME_STORAGE:-/letsencrypt/acme.json}
+      - --certificatesresolvers.${HES_TRAEFIK_CERT_RESOLVER:-letsencrypt}.acme.caserver=${HES_TRAEFIK_ACME_CA_SERVER:-https://acme-v02.api.letsencrypt.org/directory}
+      - --certificatesresolvers.${HES_TRAEFIK_CERT_RESOLVER:-letsencrypt}.acme.httpchallenge=true
+      - --certificatesresolvers.${HES_TRAEFIK_CERT_RESOLVER:-letsencrypt}.acme.httpchallenge.entrypoint=web
       - --log.level=${HES_TRAEFIK_LOG_LEVEL:-INFO}
+      - --log.format=${HES_TRAEFIK_LOG_FORMAT:-json}
+      - --log.filepath=${HES_TRAEFIK_APP_LOG_FILE:-/var/log/traefik/application/traefik.log}
       - --accesslog=${HES_TRAEFIK_ACCESS_LOG_ENABLED:-true}
-      - --accesslog.filepath=/var/log/traefik/access.log
+      - --accesslog.format=json
+      - --accesslog.filepath=${HES_TRAEFIK_ACCESS_LOG_FILE:-/var/log/traefik/access/access.log}
+      - --metrics.prometheus=${HES_TRAEFIK_METRICS_ENABLED:-true}
+      - --metrics.prometheus.entrypoint=${HES_TRAEFIK_METRICS_ENTRYPOINT:-metrics}
     ports:
       - target: 80
         published: ${HES_TRAEFIK_HTTP_PORT:-80}
@@ -53,12 +59,12 @@ services:
         published: ${HES_TRAEFIK_HTTPS_PORT:-443}
         protocol: tcp
     volumes:
-      - ${HES_CONFIG_DIR:-./config}/traefik/dynamic:/etc/traefik/dynamic:ro
+      - ${HES_CONFIG_DIR:-./config}/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
       - ${HES_SSL_DIR:-./ssl}/letsencrypt:/letsencrypt
       - ${HES_LOG_DIR:-./logs}/traefik:/var/log/traefik
     networks:
-      - hes-public
-      - hes-internal
+      - hes-frontend
+      - hes-management
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       interval: 30s
@@ -66,6 +72,13 @@ services:
       retries: 3
       start_period: 15s
     stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          memory: 64M
     logging:
       driver: json-file
       options:
@@ -77,4 +90,4 @@ services:
       com.hermes.environment: "${HES_ENVIRONMENT:-production}"
       com.hermes.phase: "1"
       org.opencontainers.image.title: "Hermes Enterprise Stack Traefik"
-      org.opencontainers.image.description: "Ingress reverse proxy for HES Phase 1 infrastructure."
+      org.opencontainers.image.description: "Production ingress reverse proxy for HES security foundation."

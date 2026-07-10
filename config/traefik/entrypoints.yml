@@ -1,0 +1,21 @@
+# Hermes Enterprise Stack (HES)
+# File: config/traefik/entrypoints.yml
+# Purpose: Reference Traefik entrypoint configuration.
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: letsencrypt
+  traefik:
+    address: ":8080"
+  metrics:
+    address: ":9100"

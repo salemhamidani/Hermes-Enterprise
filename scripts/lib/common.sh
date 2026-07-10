@@ -223,8 +223,15 @@ validate_env() {
   [[ "${HES_ENVIRONMENT:-production}" =~ ^[a-z0-9][a-z0-9_-]*$ ]] || die "HES_ENVIRONMENT must be lowercase letters, numbers, dashes, or underscores." 65
   validate_port HES_TRAEFIK_HTTP_PORT "${HES_TRAEFIK_HTTP_PORT:-80}"
   validate_port HES_TRAEFIK_HTTPS_PORT "${HES_TRAEFIK_HTTPS_PORT:-443}"
+  validate_bool HES_TRAEFIK_METRICS_ENABLED "${HES_TRAEFIK_METRICS_ENABLED:-true}"
   validate_bool HES_TRAEFIK_ACCESS_LOG_ENABLED "${HES_TRAEFIK_ACCESS_LOG_ENABLED:-true}"
   validate_bool HES_REMOVE_DATA "${HES_REMOVE_DATA:-false}"
+  [[ "${HES_FRONTEND_NETWORK:-hes-production-frontend}" =~ ^[a-z0-9][a-z0-9_.-]*$ ]] || die "HES_FRONTEND_NETWORK is not a valid network name." 65
+  [[ "${HES_BACKEND_NETWORK:-hes-production-backend}" =~ ^[a-z0-9][a-z0-9_.-]*$ ]] || die "HES_BACKEND_NETWORK is not a valid network name." 65
+  [[ "${HES_MANAGEMENT_NETWORK:-hes-production-management}" =~ ^[a-z0-9][a-z0-9_.-]*$ ]] || die "HES_MANAGEMENT_NETWORK is not a valid network name." 65
+  [[ "${HES_INTERNAL_NETWORK:-hes-production-internal}" =~ ^[a-z0-9][a-z0-9_.-]*$ ]] || die "HES_INTERNAL_NETWORK is not a valid network name." 65
+  [[ "${HES_TRAEFIK_LOG_FORMAT:-json}" =~ ^(json|common)$ ]] || die "HES_TRAEFIK_LOG_FORMAT must be json or common." 65
+  [[ "${HES_TRAEFIK_CERT_RESOLVER:-letsencrypt}" =~ ^[a-zA-Z0-9_.-]+$ ]] || die "HES_TRAEFIK_CERT_RESOLVER is not valid." 65
   require_positive_int HES_BACKUP_RETENTION_DAYS "${HES_BACKUP_RETENTION_DAYS:-14}"
   require_positive_int HES_DOCKER_LOG_MAX_FILE "${HES_DOCKER_LOG_MAX_FILE:-5}"
   [[ "${HES_DOCKER_LOG_MAX_SIZE:-10m}" =~ ^[0-9]+[kKmMgG]?$ ]] || die "HES_DOCKER_LOG_MAX_SIZE must look like 10m, 100k, or 1g." 65
@@ -316,11 +323,15 @@ ensure_directories() {
     "$(runtime_path HES_WORKSPACE_DIR ./workspace)"
     "$(runtime_path HES_LOG_DIR ./logs)"
     "$(runtime_path HES_LOG_DIR ./logs)/traefik"
+    "$(runtime_path HES_LOG_DIR ./logs)/traefik/access"
+    "$(runtime_path HES_LOG_DIR ./logs)/traefik/application"
+    "$(runtime_path HES_LOG_DIR ./logs)/traefik/security"
     "$(runtime_path HES_BACKUP_DIR ./backup)"
     "$(runtime_path HES_STORAGE_DIR ./storage)"
     "$(runtime_path HES_SSL_DIR ./ssl)"
     "$(runtime_path HES_SSL_DIR ./ssl)/letsencrypt"
     "$(runtime_path HES_DATA_DIR ./data)"
+    "${HES_PROJECT_ROOT}/secrets"
   )
 
   local dir
@@ -336,8 +347,12 @@ ensure_directories() {
     "$(runtime_path HES_STORAGE_DIR ./storage)/.gitkeep" \
     "$(runtime_path HES_SSL_DIR ./ssl)/.gitkeep" \
     "$(runtime_path HES_DATA_DIR ./data)/.gitkeep"
+  touch "${HES_PROJECT_ROOT}/secrets/.gitkeep"
 
   chmod 700 "$(runtime_path HES_SSL_DIR ./ssl)" "$(runtime_path HES_SSL_DIR ./ssl)/letsencrypt"
+  if [[ -f "$(runtime_path HES_SSL_DIR ./ssl)/letsencrypt/acme.json" ]]; then
+    chmod 600 "$(runtime_path HES_SSL_DIR ./ssl)/letsencrypt/acme.json"
+  fi
 }
 
 require_ubuntu_2404() {
@@ -362,7 +377,7 @@ check_docker_compose() {
 # Run a long-running command with an animated spinner on stderr.
 # Usage: spinner <command> [args...]
 spinner() {
-  local spinstr='|/-\'
+  local spinstr="|/-\\"
   local delay="${HES_SPINNER_DELAY:-0.1}"
   local spin_pid
   (

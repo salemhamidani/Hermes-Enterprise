@@ -9,7 +9,7 @@ Purpose: Document the current version, semantic versioning policy, version histo
 ## Current Version
 
 ```
-1.0.0
+1.1.0
 ```
 
 The canonical version of Hermes Enterprise Stack lives in the `VERSION` file at the repository root. This file contains only the version string and a trailing newline. No other content may be added to it.
@@ -64,6 +64,7 @@ Build metadata does not affect version precedence.
 | --- | --- | --- |
 | 0.1.0 | 2026-07-09 | Initial Phase 1 infrastructure foundation. Modular Compose, Traefik ingress, Docker socket proxy, lifecycle scripts, backup/restore, production-oriented documentation. |
 | 1.0.0 | 2026-07-10 | Phase 1 stable release. Infrastructure contract frozen. Versioning, architecture diagrams, ADRs, and quality gates formalized. |
+| 1.1.0 | 2026-07-10 | Sprint 2 security foundation. Production network segmentation, Traefik hardening, TLS, reusable middleware, logging separation, secrets preparation, validation upgrades, and security documentation. |
 
 Future versions must be added to this table as part of the release workflow described in `docs/ReleaseStrategy.md`.
 

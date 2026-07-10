@@ -11,6 +11,7 @@ name: Docker
       - develop
     paths:
       - "compose/**"
+      - "config/traefik/**"
       - ".env.example"
       - ".github/workflows/docker.yml"
   push:
@@ -19,6 +20,7 @@ name: Docker
       - develop
     paths:
       - "compose/**"
+      - "config/traefik/**"
 
 jobs:
   compose-config:
@@ -38,11 +40,8 @@ jobs:
 
       - name: Compose config
         run: |
-          docker compose \
-            --project-directory . \
-            --env-file .env \
-            -f compose/compose.yml \
-            config
+          chmod +x scripts/*.sh scripts/lib/*.sh scripts/install/*.sh
+          scripts/compose-validate.sh
 
       - name: Check no deprecated version key
         run: |

@@ -1,0 +1,12 @@
+# Hermes Enterprise Stack (HES)
+# File: config/traefik/providers.yml
+# Purpose: Reference Traefik provider configuration.
+
+providers:
+  docker:
+    endpoint: "tcp://docker-socket-proxy:2375"
+    exposedByDefault: false
+    network: "configured-by-HES_FRONTEND_NETWORK"
+  file:
+    filename: "/etc/traefik/dynamic.yml"
+    watch: true

@@ -6,11 +6,6 @@ name: ${HES_COMPOSE_PROJECT_NAME:-hes}
 
 services:
   docker-socket-proxy:
-    # Image is pinned to a fixed tag (never `latest`). To pin immutably by
-    # digest, set HES_SOCKET_PROXY_IMAGE in .env, for example:
-    #   HES_SOCKET_PROXY_IMAGE=tecnativa/docker-socket-proxy:0.3.0@sha256:<digest>
-    # Resolve the digest with:
-    #   docker buildx imagetools inspect tecnativa/docker-socket-proxy:0.3.0
     image: ${HES_SOCKET_PROXY_IMAGE:-tecnativa/docker-socket-proxy:0.3.0}
     restart: ${HES_RESTART_POLICY:-unless-stopped}
     read_only: true
@@ -49,7 +44,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      - hes-internal
+      - hes-management
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:2375/version"]
       interval: 30s
@@ -57,6 +52,13 @@ services:
       retries: 3
       start_period: 10s
     stop_grace_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+        reservations:
+          memory: 32M
     logging:
       driver: json-file
       options:

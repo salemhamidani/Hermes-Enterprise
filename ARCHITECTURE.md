@@ -46,12 +46,13 @@ Phase 1 uses a layered model:
 ```mermaid
 flowchart LR
   Internet["Internet / Clients"] --> Edge["Traefik"]
-  Edge --> Public["hes-public"]
-  Edge --> Internal["hes-internal"]
-  Proxy["Docker Socket Proxy"] --> Internal
+  Edge --> Frontend["hes-frontend"]
+  Edge --> Management["hes-management"]
+  Proxy["Docker Socket Proxy"] --> Management
   Proxy --> DockerAPI["Docker API"]
-  Future["Future Hermes Services"] -. attach as needed .-> Public
-  Future -. private east-west traffic .-> Internal
+  Future["Future Hermes Services"] -. public routes .-> Frontend
+  Future -. private east-west traffic .-> Backend["hes-backend"]
+  Infra["Future Infrastructure"] -. reserved .-> Internal["hes-internal"]
 ```
 
 ## Docker Diagram
@@ -69,9 +70,9 @@ flowchart TD
   Security --> SocketProxy["docker-socket-proxy"]
   Ingress --> Traefik["traefik"]
 
-  Traefik --> PublicNet["hes-public"]
-  Traefik --> InternalNet["hes-internal"]
-  SocketProxy --> InternalNet
+  Traefik --> FrontendNet["hes-frontend"]
+  Traefik --> ManagementNet["hes-management"]
+  SocketProxy --> ManagementNet
   SocketProxy --> DockerSock["/var/run/docker.sock (ro)"]
 ```
 
@@ -123,7 +124,7 @@ flowchart TD
 Security controls in Phase 1:
 
 - Network segmentation:
-  `hes-public` is for ingress-facing traffic, `hes-internal` is for internal traffic.
+  `hes-frontend` is for ingress-facing traffic, `hes-management` is for the Docker API discovery path, `hes-backend` is reserved for future private service traffic, and `hes-internal` is reserved for future infrastructure modules. `hes-public` remains as a compatibility network.
 - Docker API isolation:
   service discovery is proxied through Docker socket proxy with a minimal API surface.
 - Container hardening:
@@ -229,7 +230,9 @@ Current monitoring signals:
 - Docker Compose service status through `make status`.
 - Container logs through `make logs`.
 - Script lifecycle logs under `logs/scripts`.
-- Traefik access logs under `logs/traefik/access.log`.
+- Traefik access logs under `logs/traefik/access/`.
+- Traefik application logs under `logs/traefik/application/`.
+- Reserved Traefik security logs under `logs/traefik/security/`.
 - Health checks defined in infrastructure containers.
 
 Future monitoring direction:

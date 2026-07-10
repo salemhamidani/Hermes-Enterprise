@@ -1,21 +1,58 @@
 # Hermes Enterprise Stack (HES)
 # File: config/traefik/dynamic.yml
-# Purpose: Placeholder root for Traefik dynamic configuration.
-#
-# Phase 1 loads dynamic configuration from config/traefik/dynamic/ (see
-# dynamic/security-headers.yml). This file documents the structure for a future
-# consolidated dynamic configuration root. Everything below is commented out so
-# that no routers, services, or middlewares are enabled here.
+# Purpose: Load reusable dynamic Traefik middleware for Sprint 2 security foundation.
 
-# http:
-#   routers: {}
-#   services: {}
-#   middlewares: {}
+http:
+  middlewares:
+    hes-security-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        frameDeny: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        permissionsPolicy: "geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()"
+        contentSecurityPolicy: "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'; upgrade-insecure-requests"
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        customResponseHeaders:
+          X-Powered-By: ""
+          Server: ""
 
-# tcp:
-#   routers: {}
-#   services: {}
+    hes-rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+        period: 1s
 
-# tls:
-#   options: {}
-#   stores: {}
+    hes-compress:
+      compress:
+        encodings:
+          - gzip
+          - br
+        excludedContentTypes:
+          - text/event-stream
+        minResponseBodyBytes: 1024
+
+    hes-secure-chain:
+      chain:
+        middlewares:
+          - hes-security-headers
+          - hes-rate-limit
+          - hes-compress
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      sniStrict: true
+      cipherSuites:
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    modern:
+      minVersion: VersionTLS13
+      sniStrict: true
+  stores:
+    default: {}
