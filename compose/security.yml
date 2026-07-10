@@ -63,9 +63,3 @@ services:
       com.hermes.phase: "1"
       org.opencontainers.image.title: "Hermes Enterprise Stack Docker Socket Proxy"
       org.opencontainers.image.description: "Read-constrained Docker API proxy for infrastructure automation."
-
-networks:
-  hes-internal:
-    name: ${HES_INTERNAL_NETWORK:-hes-production-internal}
-    driver: bridge
-    internal: true

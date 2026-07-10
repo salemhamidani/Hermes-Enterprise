@@ -73,12 +73,3 @@ services:
       com.hermes.phase: "1"
       org.opencontainers.image.title: "Hermes Enterprise Stack Traefik"
       org.opencontainers.image.description: "Ingress reverse proxy for HES Phase 1 infrastructure."
-
-networks:
-  hes-public:
-    name: ${HES_PUBLIC_NETWORK:-hes-production-public}
-    driver: bridge
-  hes-internal:
-    name: ${HES_INTERNAL_NETWORK:-hes-production-internal}
-    driver: bridge
-    internal: true
