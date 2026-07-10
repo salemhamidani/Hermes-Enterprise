@@ -49,37 +49,39 @@ Purpose: Project Constitution — every decision, file, script, and contribution
 | Owner | salemhamidani |
 | Expected scale | 50+ Docker services |
 
-### Official Hermes Implementation Baseline
+### Hermes Provider Layer Baseline
 
-Sprint 2.5 discovery identified the official Hermes implementation HES is expected to support in a future implementation sprint. This section is reference and policy only; it does not authorize adding Hermes services during infrastructure-only phases.
+Sprint 3.0 defines Hermes as a provider-selected capability, not a fixed Docker image. This section is reference and policy only; it does not authorize adding Hermes services during infrastructure-only phases.
 
 | Field | Value |
 | --- | --- |
-| Official project | Hermes Agent |
-| Official repository | `https://github.com/NousResearch/hermes-agent` |
-| Official documentation | `https://hermes-agent.nousresearch.com/docs` |
-| Official package | `hermes-agent` on PyPI |
-| Official image registry | Docker Hub |
-| Official image name | `nousresearch/hermes-agent` |
-| Latest verified release | `v2026.7.7.2` / package `0.18.2` |
-| Recommended production tag | `nousresearch/hermes-agent:v2026.7.7.2` |
-| Verified multi-arch digest | `sha256:9c841866021c54c4596849f6135717e8a4d52ba510b7f52c50aef1de1a283973` |
-| LTS status | No official LTS channel verified |
+| Provider interface | `config/providers/interface.yml` |
+| Provider manifests | `config/providers/*.yml` |
+| Provider loader | `runtime/provider-loader.sh` |
+| Provider Compose reservation | `compose/providers/` |
+| Provider documentation | `docs/providers/` |
+| Supported reference provider | `nous-hermes` |
+| Reserved provider | `future-hermes` |
+| Custom provider | `custom-hermes` |
 
-Pinned image policy:
+Provider policy:
 
-- HES must never use `latest` or `main` for production Hermes services.
-- HES must pin Hermes to a verified upstream release tag at minimum.
-- Production deployments should use tag plus digest pinning after implementation-time digest verification.
-- Separate Hermes WebUI, dashboard, or suite images are not approved unless a future discovery sprint verifies the exact official source.
-- Upstream Hermes Compose examples must not be copied verbatim when they conflict with HES standards such as no `container_name` and no default host networking.
+- HES must select Hermes through `HERMES_PROVIDER` before any future implementation.
+- HES must not assume Hermes is one fixed Docker image.
+- `HERMES_REGISTRY`, `HERMES_IMAGE`, and `HERMES_VERSION` are provider inputs, not global architecture constants.
+- `nous-hermes` is a supported reference provider, not the only possible provider.
+- `future-hermes` is reserved until another verified provider is discovered.
+- `custom-hermes` requires explicit operator values and security review before use.
+- HES must never use `latest` or `main` for production Hermes provider versions.
+- Provider-specific Compose files must not be created outside an approved implementation sprint.
+- Upstream provider examples must not be copied verbatim when they conflict with HES standards such as no `container_name` and no default host networking.
 
 Upgrade policy:
 
-- Hermes upgrades require a dedicated feature branch.
-- Review upstream GitHub release notes, Docker Hub tag availability, `Dockerfile`, `docker-compose.yml`, `pyproject.toml`, and security advisories before changing the pin.
+- Provider upgrades require a dedicated feature branch.
+- Review provider release notes, registry/tag availability, runtime entrypoint behavior, and security advisories before changing provider metadata.
 - CI must pass before merge.
-- Rollback to the previous pinned tag must be documented before release.
+- Rollback to the previous provider metadata must be documented before release.
 
 ### Phase 1 Scope
 
@@ -186,7 +188,7 @@ No future service is added as an undocumented one-off.
 ### Environment File Standards
 
 - `.env` is parsed as data, not shell code.
-- Only `HES_*` variables are allowed.
+- Only `HES_*` and approved `HERMES_*` provider variables are allowed.
 - Use simple `HES_KEY=value` assignments.
 - No shell expansions, command substitutions, or source statements.
 - `.env` must never be committed to Git.
@@ -333,7 +335,7 @@ All shell scripts must:
 
 `scripts/lib/common.sh` provides:
 
-- `load_env` — Parse `.env` as data, export `HES_*` variables.
+- `load_env` — Parse `.env` as data, export `HES_*` and approved `HERMES_*` variables.
 - `validate_env` — Validate all environment values.
 - `setup_logging` — Initialize per-script log file.
 - `ensure_directories` — Create and mark runtime directories.

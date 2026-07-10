@@ -14,20 +14,22 @@ This is a planning document only. Sprint 2.5 does not implement Hermes, does not
 
 Future implementation should deploy Hermes in this order:
 
-1. Confirm upstream version pin from `docs/HERMES_VERSION_POLICY.md`.
-2. Add `.env.example` variables for Hermes image, UID/GID, ports, hostnames, secrets, and feature toggles.
-3. Prepare persistent data and secret paths.
-4. Add the Hermes Agent or gateway service module.
-5. Add dashboard service only after local-only or authenticated routing is designed.
-6. Add WebUI only if an official WebUI artifact is verified or a project owner explicitly approves a third-party artifact.
-7. Add Traefik routes with security middleware.
-8. Add health checks and validation rules.
-9. Add backup and restore coverage.
-10. Run self review and PR review before merge.
+1. Select provider through `HERMES_PROVIDER`.
+2. Resolve provider metadata with `runtime/provider-loader.sh`.
+3. Confirm provider-specific version pin from `docs/HERMES_VERSION_POLICY.md`.
+4. Add future implementation variables for UID/GID, ports, hostnames, secrets, and feature toggles.
+5. Prepare persistent data and secret paths.
+6. Add provider-specific runtime modules only in an implementation sprint.
+7. Add dashboard service only after local-only or authenticated routing is designed.
+8. Add WebUI only if an official WebUI artifact is verified or a project owner explicitly approves a third-party artifact.
+9. Add Traefik routes with security middleware.
+10. Add health checks and validation rules.
+11. Add backup and restore coverage.
+12. Run self review and PR review before merge.
 
 ## Agent
 
-The official upstream runtime is `nousresearch/hermes-agent`. Upstream starts the gateway with:
+The `nous-hermes` provider runtime metadata currently points to `nousresearch/hermes-agent`. Upstream starts the gateway with:
 
 ```text
 command: ["gateway", "run"]
@@ -35,10 +37,11 @@ command: ["gateway", "run"]
 
 Future HES implementation must adapt this into HES Compose standards:
 
+- Resolve provider metadata before selecting runtime details.
 - No `container_name`.
 - No `network_mode: host` unless explicitly approved by an ADR.
 - Use HES-managed networks.
-- Use a pinned Docker image tag.
+- Use a provider-selected pinned runtime version.
 - Use HES labels, health checks, restart policy, resource limits, log rotation, and security options.
 
 ## Dashboard
@@ -61,7 +64,7 @@ No separate official Hermes WebUI image was verified during Sprint 2.5.
 
 Future policy:
 
-- Treat the built-in dashboard/web assets inside `nousresearch/hermes-agent` as the only verified official UI surface.
+- Treat built-in dashboard/web assets as provider-specific surfaces, not global HES assumptions.
 - Do not use third-party `hermes-webui` images unless a future discovery sprint approves the exact repository, image, owner, tag, and security posture.
 - Do not implement WebUI routing until a verified artifact and security model exist.
 
@@ -159,7 +162,7 @@ If upstream does not provide a stable health endpoint, HES must document the fal
 
 A future Hermes implementation is acceptable only when:
 
-- The official image is pinned.
+- The provider is selected and provider version metadata is pinned.
 - No forbidden floating tags are used.
 - The upstream host-network Compose model is not copied blindly.
 - All services are behind HES networks and Traefik contracts.

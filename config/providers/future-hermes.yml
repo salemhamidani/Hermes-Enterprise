@@ -1,0 +1,19 @@
+# Hermes Enterprise Stack (HES)
+# File: config/providers/future-hermes.yml
+# Purpose: Placeholder metadata for future official Hermes-compatible providers.
+
+provider:
+  provider_id: future-hermes
+  display_name: Future Hermes Provider
+  provider_type: future
+  runtime_mode: custom-runtime
+  status: reserved
+  default_registry: ""
+  default_image: ""
+  default_version: ""
+  documentation: ""
+  repository: ""
+  notes:
+    - Reserved for a future verified Hermes provider.
+    - Must not be used in production until a discovery sprint verifies it.
+    - Requires explicit image, version, registry, runtime, and security review.

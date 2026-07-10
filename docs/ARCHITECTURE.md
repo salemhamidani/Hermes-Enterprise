@@ -27,6 +27,7 @@ This document describes the current infrastructure and the contract that future 
 | Network | `compose/network.yml` | Defines public and internal Docker networks. |
 | Security | `compose/security.yml` | Runs the Docker socket proxy with reduced API access. |
 | Ingress | `compose/traefik.yml` | Provides HTTP/HTTPS entrypoints and service discovery. |
+| Provider Layer | `config/providers/`, `runtime/` | Selects Hermes provider metadata without implementing Hermes. |
 | Configuration | `config/` | Holds safe-to-commit runtime configuration. |
 | Operations | `scripts/` | Provides install, validate, doctor, repair, update, backup, restore, and uninstall workflows. |
 | State | `logs/`, `backup/`, `storage/`, `ssl/`, `data/` | Holds runtime state outside tracked source files. |
@@ -203,8 +204,19 @@ Hermes-Enterprise/
 
 Future Hermes services are intentionally absent in Phase 1, but the platform is already structured for them.
 
+Sprint 3.0 adds a provider layer so future Hermes work is not tied to one fixed Docker image. Hermes implementation must flow through provider selection before any Compose module is generated.
+
+Provider layer responsibilities:
+
+- `config/providers/` stores provider manifests and the provider interface.
+- `runtime/provider-loader.sh` validates selected provider metadata.
+- `compose/providers/` is reserved for future provider-specific Compose fragments.
+- `docs/providers/` documents provider rules, supported reference providers, future providers, and custom providers.
+- `HERMES_PROVIDER`, `HERMES_REGISTRY`, `HERMES_IMAGE`, and `HERMES_VERSION` control provider selection.
+
 Expected future model:
 
+- Each Hermes service family must resolve provider metadata before choosing runtime details.
 - Each service family should have a dedicated Compose module.
 - Each service must declare only the networks it actually needs.
 - Public-facing services should route through Traefik rather than exposing host ports directly.

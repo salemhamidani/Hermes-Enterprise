@@ -45,7 +45,7 @@ Verified local findings:
 
 ## Official Docker Images
 
-The official upstream Docker workflow publishes to Docker Hub with the image name `nousresearch/hermes-agent`.
+For the `nous-hermes` provider, the official upstream Docker workflow publishes to Docker Hub with the image name `nousresearch/hermes-agent`.
 
 Verified image source:
 
@@ -61,6 +61,8 @@ Verified image source:
 - No official GHCR image was verified during Sprint 2.5 discovery.
 
 ## Supported Images
+
+These image findings apply to the `nous-hermes` provider only. HES architecture must still select a provider through the provider layer before implementation.
 
 | Purpose | Official image | Status |
 | --- | --- | --- |
@@ -85,7 +87,7 @@ Verified Docker Hub tags at discovery time include:
 - `v2026.6.5`
 - Earlier CalVer release tags
 
-Recommended production tag for future implementation:
+Recommended production tag for a future `nous-hermes` implementation:
 
 - `nousresearch/hermes-agent:v2026.7.7.2`
 
@@ -104,12 +106,14 @@ Platform digests observed for `v2026.7.7.2`:
 
 ## Version Strategy
 
+Sprint 3.0 supersedes any global fixed-image assumption with a provider layer. The version strategy below applies to the `nous-hermes` provider metadata unless another provider is selected.
+
 Hermes Agent uses two parallel version identifiers:
 
 - Package SemVer: `0.18.2` in `pyproject.toml` and PyPI.
 - Release CalVer tags: `vYYYY.M.D` with numeric suffixes for same-day patch releases, such as `v2026.7.7.2`.
 
-HES must pin Docker images by immutable release tag at minimum. Digest pinning should be used for production once the implementation sprint begins.
+HES must pin provider versions by immutable release tag or equivalent provider version at minimum. Digest pinning should be used for production container providers once the implementation sprint begins.
 
 ## Release Policy
 

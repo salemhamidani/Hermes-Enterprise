@@ -91,11 +91,15 @@
 
 ### Goals
 
+- Align Hermes architecture around a provider layer before any application services are implemented.
 - Introduce the first Hermes application services on top of the established infrastructure contract.
 - Prove that the modular architecture scales beyond infrastructure-only modules.
 
 ### Deliverables
 
+- Provider interface, provider manifests, provider loader, and provider documentation.
+- Support definitions for `nous-hermes`, `future-hermes`, and `custom-hermes`.
+- Provider-aware environment variables: `HERMES_PROVIDER`, `HERMES_REGISTRY`, `HERMES_IMAGE`, and `HERMES_VERSION`.
 - First application-facing Compose modules such as `compose/hermes-api.yml` and `compose/hermes-worker.yml`.
 - Traefik routing rules for the first Hermes endpoints.
 - Service health checks, labels, restart policy, and log rotation.
@@ -106,10 +110,13 @@
 
 - Milestone 1 complete
 - Milestone 2 security direction defined
+- Provider layer accepted through ADR-0011
 - Application service requirements finalized
 
 ### Acceptance Criteria
 
+- Hermes is selected through a provider layer, not a hardcoded image assumption.
+- Provider manifests exist for Nous, Future, and Custom Hermes.
 - Hermes services run without breaking Phase 1 infrastructure guarantees.
 - No service uses fixed `container_name` or floating `latest`.
 - Every new service has health checks, logs, labels, and backup implications documented.

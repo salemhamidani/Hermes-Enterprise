@@ -1,0 +1,65 @@
+# Hermes Enterprise Stack (HES)
+# File: config/providers/interface.yml
+# Purpose: Define the provider-layer contract without implementing Hermes.
+
+provider_interface:
+  version: "1.0"
+  status: prepared
+  implementation_scope: documentation-and-runtime-selection-only
+
+required_environment:
+  - HERMES_PROVIDER
+  - HERMES_IMAGE
+  - HERMES_VERSION
+  - HERMES_REGISTRY
+
+provider_fields:
+  provider_id:
+    required: true
+    type: slug
+    description: Stable provider identifier used by HERMES_PROVIDER.
+  display_name:
+    required: true
+    type: string
+    description: Human-readable provider name.
+  provider_type:
+    required: true
+    type: enum
+    allowed:
+      - official
+      - future
+      - custom
+    description: Provider class, not a runtime implementation.
+  runtime_mode:
+    required: true
+    type: enum
+    allowed:
+      - container-image
+      - external-endpoint
+      - custom-runtime
+    description: Runtime delivery model for future implementation.
+  default_registry:
+    required: false
+    type: string
+    description: Provider default registry, overridable by HERMES_REGISTRY.
+  default_image:
+    required: false
+    type: string
+    description: Provider default image, overridable by HERMES_IMAGE.
+  default_version:
+    required: false
+    type: string
+    description: Provider default version, overridable by HERMES_VERSION.
+  documentation:
+    required: false
+    type: url
+    description: Provider documentation URL.
+
+constraints:
+  no_containers: true
+  no_image_pulls: true
+  no_hermes_agent_implementation: true
+  no_dashboard_implementation: true
+  no_webui_implementation: true
+  compose_services_allowed: false
+  floating_tags_allowed: false

@@ -8,17 +8,17 @@ Purpose: Version pinning policy for future Hermes Agent implementation.
 
 ## Scope
 
-This policy defines how HES will select Hermes Agent versions in a future implementation sprint. It does not add services, containers, routes, or Compose modules.
+This policy defines how HES will select Hermes provider versions in a future implementation sprint. It does not add services, containers, routes, or Compose modules.
 
-## Official Upstream
+## Provider-Selected Upstream
 
 | Field | Value |
 | --- | --- |
-| Repository | `https://github.com/NousResearch/hermes-agent` |
-| Registry | Docker Hub |
-| Image | `nousresearch/hermes-agent` |
-| Documentation | `https://hermes-agent.nousresearch.com/docs` |
-| PyPI package | `hermes-agent` |
+| Provider selection | `HERMES_PROVIDER` |
+| Provider registry override | `HERMES_REGISTRY` |
+| Provider image override | `HERMES_IMAGE` |
+| Provider version override | `HERMES_VERSION` |
+| Provider metadata | `config/providers/*.yml` |
 
 ## Tag Classes
 
@@ -32,7 +32,7 @@ This policy defines how HES will select Hermes Agent versions in a future implem
 
 ## Current Discovery Result
 
-As of 2026-07-11, the latest verified stable upstream release is:
+As of 2026-07-11, the latest verified stable upstream release for the `nous-hermes` reference provider is:
 
 | Field | Value |
 | --- | --- |
@@ -47,30 +47,30 @@ As of 2026-07-11, the latest verified stable upstream release is:
 | Decision | Value |
 | --- | --- |
 | `latest` | Forbidden |
-| Stable | Latest verified GitHub release tag |
-| Pinned version | `v2026.7.7.2` |
-| Recommended production version | `nousresearch/hermes-agent:v2026.7.7.2` |
-| Recommended production pin | Tag plus digest after implementation validation |
+| Stable | Provider-specific verified release tag |
+| Pinned version | Provider-specific, resolved from manifest or override |
+| Recommended production version | Provider-specific version selected through `HERMES_VERSION` |
+| Recommended production pin | Provider-specific tag plus digest after implementation validation |
 | LTS version | Not available; no official LTS was verified |
 
 ## Pinning Requirements
 
 Future HES implementation must:
 
-- Define image references through `.env` variables.
-- Use `HES_HERMES_IMAGE=nousresearch/hermes-agent:v2026.7.7.2` or a stricter digest-pinned equivalent.
+- Select the provider through `HERMES_PROVIDER`.
+- Resolve registry, image, and version through provider metadata plus optional `HERMES_REGISTRY`, `HERMES_IMAGE`, and `HERMES_VERSION` overrides.
 - Never use `latest` in Compose files.
-- Never use unverified third-party Hermes images.
-- Keep Agent, gateway, dashboard, and built-in web assets on the same upstream image unless upstream publishes official split images.
+- Never use unverified third-party Hermes providers.
+- Avoid hardcoding one provider image as the global architecture.
 
 ## Upgrade Policy
 
-A Hermes Agent upgrade is allowed only when all conditions are met:
+A Hermes provider upgrade is allowed only when all conditions are met:
 
 1. The target version exists as an upstream GitHub release.
 2. The Docker Hub tag exists and matches the release tag.
 3. Release notes have been reviewed for breaking changes.
-4. The upstream `Dockerfile`, `docker-compose.yml`, and entrypoint behavior have been compared against the currently pinned version.
+4. Provider runtime behavior has been compared against the currently pinned provider metadata.
 5. Security advisories have been reviewed.
 6. The change is implemented in a dedicated feature branch.
 7. CI passes Compose, Shell, YAML, Markdown, Docker lint, and security checks.
@@ -83,7 +83,7 @@ Rollback must be possible without changing architecture.
 Required rollback steps for a future implementation:
 
 1. Stop Hermes services through HES lifecycle scripts.
-2. Revert the Hermes image variable to the previous pinned release tag.
+2. Revert provider metadata or provider override variables to the previous approved values.
 3. Preserve the Hermes data volume unless the release notes require a documented migration rollback.
 4. Restart only the Hermes service group.
 5. Verify health checks, dashboard availability, gateway behavior, logs, and Traefik routing.

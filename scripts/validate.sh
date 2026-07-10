@@ -39,6 +39,7 @@ validate_env_example() {
     HES_DATA_DIR HES_CONFIG_DIR
     HES_COMPOSE_PROJECT_NAME HES_RESTART_POLICY
     HES_PUBLIC_NETWORK HES_INTERNAL_NETWORK
+    HERMES_PROVIDER HERMES_IMAGE HERMES_VERSION HERMES_REGISTRY
     HES_TRAEFIK_IMAGE HES_TRAEFIK_HTTP_PORT HES_TRAEFIK_HTTPS_PORT
     HES_TRAEFIK_LOG_LEVEL HES_TRAEFIK_ACCESS_LOG_ENABLED
     HES_TRAEFIK_DOCKER_ENDPOINT HES_TRAEFIK_ACME_STORAGE
@@ -157,6 +158,18 @@ validate_yaml_syntax() {
   fi
 }
 
+validate_provider_layer() {
+  [[ -d "${HES_PROJECT_ROOT}/config/providers" ]] || die "Missing provider config directory." 66
+  [[ -d "${HES_PROJECT_ROOT}/compose/providers" ]] || die "Missing provider Compose reservation directory." 66
+  [[ -d "${HES_PROJECT_ROOT}/runtime" ]] || die "Missing runtime directory." 66
+  [[ -f "${HES_PROJECT_ROOT}/config/providers/interface.yml" ]] || die "Missing provider interface specification." 66
+  [[ -f "${HES_PROJECT_ROOT}/config/providers/nous-hermes.yml" ]] || die "Missing Nous Hermes provider manifest." 66
+  [[ -f "${HES_PROJECT_ROOT}/config/providers/future-hermes.yml" ]] || die "Missing Future Hermes provider manifest." 66
+  [[ -f "${HES_PROJECT_ROOT}/config/providers/custom-hermes.yml" ]] || die "Missing Custom Hermes provider manifest." 66
+  bash "${HES_PROJECT_ROOT}/runtime/provider-loader.sh" --validate
+  log_success "Hermes provider layer is valid."
+}
+
 main() {
   log_info "Validating HES project files."
   require_command bash
@@ -174,17 +187,18 @@ main() {
   validate_network_config
   validate_ports
   validate_yaml_syntax
+  validate_provider_layer
 
   if grep -RIl $'\r' "${HES_PROJECT_ROOT}" --exclude-dir=.git >/dev/null 2>&1; then
     die "CRLF line endings detected. Use LF line endings for Linux scripts and Compose files." 65
   fi
 
   if command -v shellcheck >/dev/null 2>&1; then
-    shellcheck "${HES_PROJECT_ROOT}"/scripts/*.sh "${HES_PROJECT_ROOT}"/scripts/lib/*.sh "${HES_PROJECT_ROOT}"/scripts/install/*.sh
+    shellcheck "${HES_PROJECT_ROOT}"/scripts/*.sh "${HES_PROJECT_ROOT}"/scripts/lib/*.sh "${HES_PROJECT_ROOT}"/scripts/install/*.sh "${HES_PROJECT_ROOT}"/runtime/*.sh
     log_success "Shell scripts passed shellcheck."
   else
     log_warn "shellcheck is not installed; syntax-only Bash validation will be used."
-    bash -n "${HES_PROJECT_ROOT}"/scripts/*.sh "${HES_PROJECT_ROOT}"/scripts/lib/*.sh "${HES_PROJECT_ROOT}"/scripts/install/*.sh
+    bash -n "${HES_PROJECT_ROOT}"/scripts/*.sh "${HES_PROJECT_ROOT}"/scripts/lib/*.sh "${HES_PROJECT_ROOT}"/scripts/install/*.sh "${HES_PROJECT_ROOT}"/runtime/*.sh
   fi
 
   if find "${HES_PROJECT_ROOT}/compose" -type f -name '*.yml' -exec grep -H "^version:" {} + >/dev/null 2>&1; then

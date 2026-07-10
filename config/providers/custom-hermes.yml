@@ -1,0 +1,19 @@
+# Hermes Enterprise Stack (HES)
+# File: config/providers/custom-hermes.yml
+# Purpose: Placeholder metadata for operator-supplied Hermes-compatible providers.
+
+provider:
+  provider_id: custom-hermes
+  display_name: Custom Hermes Provider
+  provider_type: custom
+  runtime_mode: custom-runtime
+  status: operator-defined
+  default_registry: ""
+  default_image: ""
+  default_version: ""
+  documentation: ""
+  repository: ""
+  notes:
+    - Custom providers require operator-supplied HERMES_REGISTRY, HERMES_IMAGE, and HERMES_VERSION values.
+    - HES does not trust custom providers by default.
+    - Custom providers require security review before any implementation sprint uses them.
