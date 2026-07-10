@@ -14,6 +14,7 @@
   "blanks-around-lists": false,
   "no-bare-urls": false,
   "fenced-code-language": false,
+  "ol-prefix": false,
   "list-indent": false,
   "MD013": false,
   "MD024": { "siblings_only": true },
